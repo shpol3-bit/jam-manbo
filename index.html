@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LottoMaster | Scientific Number Generator & Strategic Lottery Insights</title>
-    <meta name="description" content="Professional lotto number generator using advanced algorithms. Read our comprehensive guide on lottery statistics, historical analysis, and responsible gaming tips to enhance your experience.">
-    <meta name="keywords" content="lotto generator, lottery statistics, lucky numbers, lotto probability, responsible gaming, lottery history, random number algorithm">
+    <title>InsightMaster | Fortune, Saju & Psychological Insights</title>
+    <meta name="description" content="Discover your destiny with our advanced Saju (Four Pillars) analysis, daily fortune, and scientific psychological tests. Get insights into your love, wealth, and career today.">
+    <meta name="keywords" content="saju analysis, daily fortune, romance luck, wealth luck, psychological test, personality test, lotto generator">
     
-    <!-- Open Graph for Social Media -->
-    <meta property="og:title" content="LottoMaster | Scientific Number Generator">
-    <meta property="og:description" content="Generate numbers and learn the science behind the lottery.">
+    <meta property="og:title" content="InsightMaster | Explore Your Destiny">
+    <meta property="og:description" content="Personalized fortune and psychological analysis in one place.">
     <meta property="og:url" content="https://www.tstmind.com">
-    <meta property="og:type" content="website">
 
     <meta name="google-adsense-account" content="ca-pub-2122051581422074">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2122051581422074"
@@ -21,74 +19,115 @@
 <body>
     <header>
         <nav class="navbar">
-            <div class="logo">LottoMaster</div>
+            <div class="logo">InsightMaster</div>
             <ul class="nav-links">
-                <li><a href="#generator">Generator</a></li>
-                <li><a href="#academy">Lotto Academy</a></li>
-                <li><a href="#responsible">Safety</a></li>
-                <li><a href="about.html">About</a></li>
+                <li><a href="#fortune">Fortune</a></li>
+                <li><a href="#psychology">Psyche Test</a></li>
+                <li><a href="#lotto">Lotto</a></li>
+                <li><a href="#academy">Academy</a></li>
             </ul>
         </nav>
     </header>
 
-    <main class="container" id="generator">
+    <main class="container">
         <div class="theme-toggle">
             <button id="theme-btn">🌙 Dark Mode</button>
         </div>
-        <h1>Scientific Lotto Generator</h1>
-        <p class="subtitle">Utilizing cryptographically secure pseudo-random number generators (CSPRNG) for your lucky combinations.</p>
-        
-        <div id="lotto-balls-container"></div>
-        <div class="action-area">
-            <button id="generate-btn">Generate 5 Lucky Sets</button>
-        </div>
 
-        <!-- NEW: HIGH QUALITY CONTENT SECTION (AD-SENSE REQUIREMENT) -->
+        <!-- 1. FORTUNE & SAJU SECTION -->
+        <section id="fortune" class="feature-section">
+            <h1>Daily Fortune & Saju</h1>
+            <p class="subtitle">Enter your birth details to unlock your cosmic blueprint.</p>
+            
+            <div class="input-card">
+                <form id="fortune-form">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Birth Date</label>
+                            <input type="date" id="birth-date" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Birth Time</label>
+                            <input type="time" id="birth-time">
+                        </div>
+                    </div>
+                    <button type="submit" id="check-fortune-btn">Reveal My Destiny</button>
+                </form>
+            </div>
+
+            <div id="fortune-results" class="results-container hidden">
+                <!-- Dynamic Results Here -->
+            </div>
+        </section>
+
+        <!-- 2. PSYCHOLOGICAL TEST SECTION -->
+        <section id="psychology" class="feature-section">
+            <h2>Psychological Insight Tests</h2>
+            <p>Explore the hidden corners of your mind through our visual and behavioral tests.</p>
+            
+            <div class="test-grid">
+                <div class="test-card" id="test-ocean">
+                    <div class="test-icon">🌊</div>
+                    <h3>The Ocean Path</h3>
+                    <p>What does your choice of path say about your future career?</p>
+                    <button class="start-test-btn" data-test="ocean">Start Test</button>
+                </div>
+                <div class="test-card" id="test-forest">
+                    <div class="test-icon">🌲</div>
+                    <h3>Forest Selection</h3>
+                    <p>Discover your true personality through a walk in the woods.</p>
+                    <button class="start-test-btn" data-test="forest">Start Test</button>
+                </div>
+            </div>
+
+            <div id="test-modal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <div id="test-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. LOTTO SECTION (SECONDARY) -->
+        <section id="lotto" class="feature-section lotto-lite">
+            <h2>Lotto Number Generator</h2>
+            <p>Need extra luck? Generate your scientific random combinations below.</p>
+            <div id="lotto-balls-container"></div>
+            <button id="generate-btn">Generate Lucky Sets</button>
+        </section>
+
+        <!-- 4. ACADEMY SECTION (SEO CONTENT) -->
         <section id="academy" class="info-section">
-            <h2>The Science and History of Lotteries</h2>
+            <h2>The Science of Insights</h2>
             <article class="content-rich-article">
-                <h3>1. A Brief History of Numbers</h3>
-                <p>Did you know that the earliest recorded signs of a lottery are Keno slips from the Chinese Han Dynasty between 205 and 187 BC? These lotteries are believed to have helped finance major government projects like the Great Wall of China. In the modern era, lotteries have evolved from simple paper draws to complex digital systems, but the core human desire remains: the thrill of the unknown and the hope for a life-changing event.</p>
+                <h3>Understanding Saju and Manse-ryeok</h3>
+                <p>Saju, also known as the Four Pillars of Destiny, is a traditional Eastern metaphysical system that analyzes a person's life based on their birth year, month, day, and hour. Each pillar represents a different aspect of life, including ancestors, parents, self, and children. By calculating the alignment of the five elements (Wood, Fire, Earth, Metal, Water), we can gain insights into potential life paths and personality traits.</p>
                 
-                <h3>2. The Mathematics of Probability</h3>
-                <p>In a standard 6/45 lottery system, the number of possible combinations is 8,145,060. This is calculated using the formula for combinations: n! / (r!(n-r)!). While every single combination has exactly the same probability of being drawn—approximately 0.000012%—human psychology often leads us to avoid patterns like "1, 2, 3, 4, 5, 6". Interestingly, these sequential numbers are just as likely to appear as any other random-looking set.</p>
-                
-                <h3>3. Strategic Selection: Tips for Enthusiasts</h3>
-                <p>While no tool can predict the future, you can ensure your selection is "well-balanced." Experts often look at the 'Sum of Numbers'. In a 6/45 draw, the average sum is around 138. Selecting numbers that sum between 110 and 170 is a common technique used to avoid extreme sets that statistically occur less frequently.</p>
-                
-                <h3>4. Common Myths Debunked</h3>
-                <p>One common myth is the "due for a win" fallacy, also known as the Gambler's Fallacy. Just because a number hasn't appeared in ten draws doesn't mean it is more likely to appear in the eleventh. Each draw is an independent event with no memory of previous results.</p>
+                <h3>The Value of Psychological Testing</h3>
+                <p>Modern psychology often uses projective tests to understand a person's subconscious. By presenting ambiguous stimuli, like an image of a path or a forest, and asking for a preference, we can tap into the values and fears that guide your decision-making process.</p>
             </article>
         </section>
 
-        <!-- NEW: POLICY COMPLIANCE SECTION -->
         <section id="responsible" class="info-section safety-box">
-            <h2>Responsible Gaming & Safety</h2>
-            <p>At LottoMaster, we believe the lottery should be a form of entertainment, not a way to solve financial problems. It is crucial to play responsibly. Here are our core safety guidelines:</p>
-            <ul>
-                <li><strong>Set a Limit:</strong> Never spend more than you can afford to lose.</li>
-                <li><strong>Don't Chase Losses:</strong> Acceptance is key in random games.</li>
-                <li><strong>Balance Your Life:</strong> Ensure gaming doesn't interfere with work or family.</li>
-            </ul>
-            <p>If you or someone you know is struggling with gambling, please contact international support organizations like <a href="https://www.gamblersanonymous.org" target="_blank">Gamblers Anonymous</a> or your local help center.</p>
+            <h2>Responsible Guidance</h2>
+            <p>Our insights are for entertainment and self-reflection purposes only. We encourage you to make life decisions based on sound judgment and professional advice when necessary.</p>
         </section>
 
         <div class="contact-section">
-            <h3>Partnership & Support</h3>
-            <p>Need help or interested in a partnership? Reach out to our team.</p>
+            <h3>Support & Inquiries</h3>
             <form id="contact-form">
                 <div class="form-group">
                     <input type="email" name="email" placeholder="Your Email" required data-fs-field>
                 </div>
                 <div class="form-group">
-                    <textarea name="message" placeholder="How can we help you?" required data-fs-field></textarea>
+                    <textarea name="message" placeholder="Message" required data-fs-field></textarea>
                 </div>
                 <button type="submit" id="submit-btn" data-fs-submit-btn>Send Message</button>
             </form>
         </div>
 
         <div class="comments-section">
-            <h3>Global Community Board</h3>
+            <h3>Community Board</h3>
             <div id="disqus_thread"></div>
         </div>
     </main>
@@ -96,8 +135,8 @@
     <footer>
         <div class="footer-content">
             <div class="footer-brand">
-                <span class="logo">LottoMaster</span>
-                <p>Empowering players with science and data.</p>
+                <span class="logo">InsightMaster</span>
+                <p>Decoding the universe, one insight at a time.</p>
             </div>
             <ul class="footer-links">
                 <li><a href="privacy.html">Privacy Policy</a></li>
@@ -105,7 +144,7 @@
                 <li><a href="about.html">About Us</a></li>
                 <li><a href="contact.html">Contact Us</a></li>
             </ul>
-            <p class="copyright">&copy; 2026 LottoMaster. All rights reserved. Play Responsibly.</p>
+            <p class="copyright">&copy; 2026 InsightMaster. All rights reserved.</p>
         </div>
     </footer>
 
