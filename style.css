@@ -113,6 +113,62 @@ h1 {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
+.contact-section {
+    margin-top: 50px;
+    padding-top: 30px;
+    border-top: 2px solid var(--shadow);
+    text-align: left;
+}
+
+.contact-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group input, .form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--shadow);
+    border-radius: 8px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.form-group textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+#submit-btn {
+    width: 100%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+#submit-btn:hover {
+    background-color: var(--btn-hover);
+}
+
 lotto-ball {
     display: inline-block;
 }
