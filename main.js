@@ -104,14 +104,12 @@ class LanguageManager {
     }
 }
 
-// View Switching Logic
 function showView(viewId) {
     document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
     document.getElementById(`view-${viewId}`).classList.add('active');
     window.scrollTo(0, 0);
 }
 
-// Fortune & Saju Logic
 class FortuneManager {
     constructor() {
         this.form = document.getElementById('fortune-form');
@@ -139,26 +137,42 @@ class FortuneManager {
         const date = new Date(dateStr);
         const day = date.getDate();
         const month = date.getMonth() + 1;
-        const seed = day + month;
+        const year = date.getFullYear();
+        const seed = day + month + (year % 100);
 
         const lang = document.documentElement.lang || 'ko';
+        
         const fortunes = lang === 'ko' ? [
-            "성장의 기운이 가득한 날입니다. 새로운 기회가 봄꽃처럼 피어날 것입니다.",
-            "오늘은 안정이 최우선입니다. 미뤄둔 일을 차근차근 마무리하세요.",
-            "뜻밖의 만남이 기쁨을 가져다줄 수 있습니다. 마음을 열어두세요.",
-            "재정적인 지혜가 필요한 시기입니다. 큰 지출 전 한 번 더 생각하세요.",
-            "에너지가 넘치는 하루입니다! 새로운 프로젝트나 운동을 시작하기 좋습니다."
+            {
+                overview: "하늘의 기운이 당신을 돕는 날입니다. 평소 계획하던 일이 있다면 오늘 실행에 옮기기에 최적의 시기입니다. 주변 사람들과의 협력이 큰 성과를 가져올 것이니 독단적인 결정보다는 의견을 경청하는 태도가 길운을 불러옵니다.",
+                romance: "상대방의 작은 변화를 알아차려 주는 세심함이 필요한 때입니다. 싱글이라면 가까운 지인과의 모임에서 뜻밖의 설렘을 느낄 수 있는 인연이 나타날 가능성이 높습니다. 솔직한 표현이 서로의 거리를 좁히는 열쇠가 됩니다.",
+                wealth: "금전운이 상승 곡선을 그리고 있습니다. 예상치 못한 곳에서 작은 수익이 발생하거나, 오랫동안 묵혀두었던 자산이 가치를 발할 수 있습니다. 다만, 과도한 투자는 금물이니 안정적인 자산 관리에 집중하는 것이 좋습니다."
+            },
+            {
+                overview: "오늘은 내실을 다지는 데 집중해야 하는 시기입니다. 겉으로 드러나는 화려함보다는 실질적인 이득과 내면의 평화를 찾는 것이 중요합니다. 서두르지 않고 차근차근 단계를 밟아 나간다면 조만간 큰 기회가 찾아올 것입니다.",
+                romance: "서로에 대한 신뢰가 깊어지는 하루입니다. 거창한 데이트보다는 소박한 일상을 함께 나누는 것에서 진정한 행복을 느낄 수 있습니다. 대화 중 과거의 서운했던 점을 꺼내기보다는 미래의 희망적인 이야기를 나누는 것이 좋습니다.",
+                wealth: "지출 관리에 유의해야 하는 날입니다. 충동적인 구매 욕구가 생길 수 있으나, 꼭 필요한 것인지 다시 한번 자문해 보세요. 저축 계획을 재점검하고 불필요한 고정 지출을 줄이는 것만으로도 금전적인 이득을 볼 수 있습니다."
+            }
         ] : [
-            "A day full of growth energy. New opportunities will bloom like spring flowers.",
-            "Stability is your priority today. Finish pending tasks steadily.",
-            "An unexpected encounter may bring joy. Keep your heart open.",
-            "Financial wisdom is needed. Think twice before any major spending.",
-            "Energy is overflowing! It's a great day to start a new project or workout."
+            {
+                overview: "Heaven's energy is on your side today. If you have any plans, today is the perfect day to take action. Cooperation with others will bring great results, so listening to opinions rather than making arbitrary decisions will bring good luck.",
+                romance: "It's a time when you need to be attentive to the small changes in your partner. If you're single, there's a high chance of meeting someone unexpected at a gathering. Honest expression is the key to closing the distance between each other.",
+                wealth: "The wealth luck is on an upward curve. Small profits may arise from unexpected places, or long-held assets may prove valuable. However, excessive investment is a no-go, so focus on stable asset management."
+            },
+            {
+                overview: "Today is a time to focus on strengthening your inner core. Rather than outward glamour, focus on practical gains and inner peace. If you take steps steadily without rushing, a great opportunity will come your way soon.",
+                romance: "It's a day when trust in each other deepens. You can find true happiness in sharing simple daily life rather than a grand date. In conversation, talk about hopeful future stories rather than past disappointments.",
+                wealth: "Be careful with your spending today. You may have an impulsive urge to buy things, so ask yourself if they are really necessary. Re-checking your savings plan and reducing fixed costs can lead to financial gains."
+            }
         ];
 
+        const selected = fortunes[seed % fortunes.length];
+
         return {
-            today: fortunes[seed % fortunes.length],
-            saju: lang === 'ko' ? "당신의 오행 분석 결과 '목(木)'과 '수(水)'의 기운이 강하게 나타납니다. 이는 유연한 적응력과 창의적인 잠재력을 의미합니다." : "Your elemental analysis shows strong 'Wood' and 'Water' energy, indicating flexibility and creative potential."
+            today: selected.overview,
+            romance: selected.romance,
+            wealth: selected.wealth,
+            saju: lang === 'ko' ? `분석 결과, 당신의 사주는 '금(金)'과 '토(土)'의 조화가 돋보입니다. 이는 성실함과 견고한 의지를 바탕으로 어떠한 역경도 이겨낼 수 있는 강인한 생명력을 상징합니다. 특히 올해는 '수(水)'의 기운이 들어와 지혜와 유연함이 더해지니 학문이나 창작 분야에서 큰 두각을 나타낼 것입니다.` : `According to the analysis, your Saju highlights the harmony between 'Metal' and 'Earth'. This symbolizes a strong vitality that can overcome any adversity based on sincerity and solid will. Especially this year, the entry of 'Water' energy adds wisdom and flexibility, making you stand out in academic or creative fields.`
         };
     }
 
@@ -166,12 +180,20 @@ class FortuneManager {
         const lang = document.documentElement.lang || 'ko';
         this.resultsContainer.innerHTML = `
             <div class="fortune-card-grid">
-                <div class="result-card">
+                <div class="result-card wide">
                     <h3>🌟 ${lang === 'ko' ? '오늘의 총평' : 'Today\'s Overview'}</h3>
                     <p>${data.today}</p>
                 </div>
                 <div class="result-card">
-                    <h3>📜 ${lang === 'ko' ? '사주 분석' : 'Saju Analysis'}</h3>
+                    <h3>💖 ${lang === 'ko' ? '연애운 상세' : 'Romance Luck'}</h3>
+                    <p>${data.romance}</p>
+                </div>
+                <div class="result-card">
+                    <h3>💰 ${lang === 'ko' ? '금전운 상세' : 'Wealth Luck'}</h3>
+                    <p>${data.wealth}</p>
+                </div>
+                <div class="result-card wide">
+                    <h3>📜 ${lang === 'ko' ? '정밀 사주 분석' : 'Deep Saju Analysis'}</h3>
                     <p>${data.saju}</p>
                 </div>
             </div>
@@ -181,7 +203,6 @@ class FortuneManager {
     }
 }
 
-// Psychological Test Logic
 class PsycheTestManager {
     constructor() {
         this.modal = document.getElementById('test-modal');
@@ -189,7 +210,6 @@ class PsycheTestManager {
         this.closeBtn = document.querySelector('.close-modal');
         this.init();
     }
-
     init() {
         document.querySelectorAll('.start-test-btn').forEach(btn => {
             btn.addEventListener('click', () => this.start(btn.dataset.test));
@@ -197,7 +217,6 @@ class PsycheTestManager {
         if (this.closeBtn) this.closeBtn.onclick = () => this.modal.classList.add('hidden');
         window.onclick = (e) => { if (e.target == this.modal) this.modal.classList.add('hidden'); };
     }
-
     start(testType) {
         this.modal.classList.remove('hidden');
         const lang = document.documentElement.lang || 'ko';
@@ -233,26 +252,24 @@ class PsycheTestManager {
             `;
         }
     }
-
     showResult(type, choice) {
         const lang = document.documentElement.lang || 'ko';
         const results = {
             ocean: lang === 'ko' ? [
-                "평화와 안정을 중시하는 타입입니다. 갈등이 적고 명확하고 안정적인 커리어 경로를 선호합니다.",
-                "도전과 성취를 즐기는 모험가 타입입니다. 위험이 따르더라도 큰 보상이 있는 환경에서 능력을 발휘합니다."
+                "평화와 안정을 중시하는 타입입니다. 갈등이 적고 명확하고 안정적인 커리어 경로를 선호합니다. 주변 사람들과 조화를 이루며 꾸준히 성장하는 것에 큰 가치를 둡니다.",
+                "도전과 성취를 즐기는 모험가 타입입니다. 위험이 따르더라도 큰 보상이 있는 환경에서 능력을 발휘합니다. 남들이 가지 않은 길을 개척하며 자신의 존재감을 증명하고 싶어 합니다."
             ] : [
-                "You value peace and stability. You prefer a clear and stable career path with minimal conflict.",
-                "You are an adventurer who enjoys challenges. You thrive in environments with high risk and high reward."
+                "You value peace and stability. You prefer a clear and stable career path with minimal conflict. You find great value in growing steadily while harmonizing with those around you.",
+                "You are an adventurer who enjoys challenges and achievements. You thrive in environments with high risk and high reward. You want to prove your presence by pioneering paths that others have not taken."
             ],
             forest: lang === 'ko' ? [
-                "지혜롭고 신중하며 신뢰를 주는 타입입니다. 사람들은 당신의 묵직한 존재감과 장기적인 시야에 의지합니다.",
-                "감수성이 풍부하고 내면 세계가 깊은 타입입니다. 직관력이 뛰어나며 자기 성찰을 중요하게 생각합니다."
+                "지혜롭고 신중하며 신뢰를 주는 타입입니다. 사람들은 당신의 묵직한 존재감과 장기적인 시야에 의지합니다. 어떤 상황에서도 흔들리지 않는 뿌리 깊은 가치관을 가지고 있습니다.",
+                "감수성이 풍부하고 내면 세계가 깊은 타입입니다. 직관력이 뛰어나며 자기 성찰을 중요하게 생각합니다. 눈에 보이는 것 너머의 본질을 꿰뚫어 보는 통찰력을 지녔습니다."
             ] : [
-                "You are wise, cautious, and trustworthy. People rely on your solid presence and long-term vision.",
-                "You have rich sensibility and a deep inner world. You are highly intuitive and value self-reflection."
+                "You are wise, cautious, and trustworthy. People rely on your solid presence and long-term vision. You have deep-rooted values that do not waver in any situation.",
+                "You have rich sensibility and a deep inner world. You are highly intuitive and value self-reflection. You possess the insight to see through the essence beyond what is visible."
             ]
         };
-
         this.content.innerHTML = `
             <h3>${lang === 'ko' ? '당신의 분석 결과' : 'Your Analysis Result'}</h3>
             <p class="test-result-text">${results[type][choice - 1]}</p>
@@ -261,7 +278,6 @@ class PsycheTestManager {
     }
 }
 
-// Lotto Logic
 class LottoBall extends HTMLElement {
     constructor() { super(); this.attachShadow({ mode: 'open' }); }
     connectedCallback() { this.render(); }
@@ -276,12 +292,10 @@ class LottoBall extends HTMLElement {
 }
 customElements.define('lotto-ball', LottoBall);
 
-// Initialize Managers
 const langManager = new LanguageManager();
 const fortuneManager = new FortuneManager();
 window.psycheTest = new PsycheTestManager();
 
-// Lotto Event
 document.getElementById('generate-btn').addEventListener('click', () => {
     const container = document.getElementById('lotto-balls-container');
     container.innerHTML = '';
@@ -297,7 +311,6 @@ document.getElementById('generate-btn').addEventListener('click', () => {
     container.appendChild(setRow);
 });
 
-// Theme Logic
 const themeBtn = document.getElementById('theme-btn');
 let currentTheme = localStorage.getItem('theme') || 'light';
 document.documentElement.setAttribute('data-theme', currentTheme);
