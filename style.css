@@ -337,6 +337,124 @@ h1 {
     text-align: center;
 }
 
+.mbti-section {
+    margin-top: 42px;
+}
+
+.mbti-section h2 {
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.mbti-intro {
+    color: var(--secondary-color);
+    margin: 0 auto 22px;
+    max-width: 720px;
+    text-align: center;
+}
+
+.mbti-type-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.mbti-type-btn {
+    background: var(--container-bg);
+    border: 1px solid var(--shadow);
+    border-radius: 8px;
+    color: var(--text-color);
+    cursor: pointer;
+    min-height: 74px;
+    padding: 10px;
+    text-align: left;
+    transition: 0.2s;
+}
+
+.mbti-type-btn strong,
+.mbti-type-btn span {
+    display: block;
+}
+
+.mbti-type-btn strong {
+    font-size: 1.05rem;
+}
+
+.mbti-type-btn span {
+    color: var(--secondary-color);
+    font-size: 0.86rem;
+    margin-top: 3px;
+}
+
+.mbti-type-btn:hover,
+.mbti-type-btn.active {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 14px var(--shadow);
+    transform: translateY(-2px);
+}
+
+.mbti-type-btn.active {
+    background: var(--primary-color);
+    color: #ffffff;
+}
+
+.mbti-type-btn.active span {
+    color: #ffffff;
+}
+
+.mbti-detail {
+    border-top-color: var(--accent-color);
+}
+
+.mbti-detail-head {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.mbti-code {
+    color: var(--primary-color);
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.mbti-detail-head h3 {
+    margin: 6px 0 0;
+}
+
+.mbti-detail-head p {
+    color: var(--secondary-color);
+    font-weight: 700;
+    margin: 0;
+}
+
+.mbti-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.mbti-info-card {
+    background: var(--bg-color);
+    border: 1px solid var(--shadow);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.mbti-info-card h4 {
+    color: var(--primary-color);
+    margin: 0 0 8px;
+}
+
+.mbti-info-card p {
+    margin: 0;
+}
+
 /* Modal */
 .modal {
     position: fixed;
@@ -600,7 +718,7 @@ h1 {
 .hidden { display: none; }
 
 @media (max-width: 768px) {
-    .portal-grid, .fortune-card-grid, .test-grid, .choice-grid, .fortune-query-tabs {
+    .portal-grid, .fortune-card-grid, .test-grid, .choice-grid, .fortune-query-tabs, .mbti-type-grid, .mbti-info-grid, .mbti-detail-head {
         grid-template-columns: 1fr;
     }
     .navbar { flex-direction: column; gap: 10px; }

@@ -859,6 +859,263 @@ class PsycheTestManager {
     }
 }
 
+class MBTIManager {
+    constructor() {
+        this.grid = document.getElementById('mbti-type-grid');
+        this.detail = document.getElementById('mbti-detail');
+        this.types = this.createTypes();
+        this.init();
+    }
+
+    init() {
+        if (!this.grid || !this.detail) return;
+        this.grid.innerHTML = Object.keys(this.types).map((type, index) => `
+            <button type="button" class="mbti-type-btn ${index === 0 ? 'active' : ''}" data-mbti="${type}">
+                <strong>${type}</strong>
+                <span>${this.types[type].name}</span>
+            </button>
+        `).join('');
+        this.grid.querySelectorAll('.mbti-type-btn').forEach(button => {
+            button.addEventListener('click', () => this.show(button.dataset.mbti));
+        });
+        this.show('INTJ');
+    }
+
+    show(type) {
+        const data = this.types[type];
+        if (!data) return;
+        this.grid.querySelectorAll('.mbti-type-btn').forEach(button => {
+            button.classList.toggle('active', button.dataset.mbti === type);
+        });
+        this.detail.innerHTML = `
+            <div class="mbti-detail-head">
+                <div>
+                    <span class="mbti-code">${type}</span>
+                    <h3>${data.name}</h3>
+                </div>
+                <p>${data.summary}</p>
+            </div>
+            <div class="mbti-info-grid">
+                ${this.renderBlock('핵심 성향', data.traits)}
+                ${this.renderBlock('성격과 강점', data.strengths)}
+                ${this.renderBlock('주의할 점', data.cautions)}
+                ${this.renderBlock('연애 스타일', data.love)}
+                ${this.renderBlock('잘 맞는 궁합', data.best)}
+                ${this.renderBlock('조심할 궁합', data.challenge)}
+                ${this.renderBlock('일·커리어 방식', data.work)}
+                ${this.renderBlock('성장 팁', data.growth)}
+            </div>
+        `;
+        this.detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    renderBlock(title, text) {
+        return `
+            <article class="mbti-info-card">
+                <h4>${title}</h4>
+                <p>${text}</p>
+            </article>
+        `;
+    }
+
+    createTypes() {
+        return {
+            INTJ: {
+                name: '전략가',
+                summary: '큰 그림을 먼저 보고 장기 전략을 세우는 독립형 사고가 강한 유형입니다.',
+                traits: '혼자 깊게 생각하는 시간이 필요하고, 감정보다 구조와 논리를 먼저 봅니다. 목표가 명확하면 놀라울 만큼 오래 집중합니다.',
+                strengths: '복잡한 문제를 단순한 체계로 바꾸는 능력이 좋습니다. 남들이 놓친 위험과 가능성을 미리 계산하는 편입니다.',
+                cautions: '기준이 높아 타인의 속도를 답답하게 느낄 수 있습니다. 설명 없이 결론만 말하면 차갑게 보일 수 있습니다.',
+                love: '가볍게 시작하기보다 신뢰와 지적 대화가 쌓여야 마음을 엽니다. 사생활과 독립성을 존중받을 때 오래 갑니다.',
+                best: 'ENFP, ENTP처럼 아이디어를 넓혀주고 감정 표현을 자연스럽게 돕는 유형과 보완이 좋습니다.',
+                challenge: 'ESFJ, ISFJ처럼 즉각적인 정서 교류를 중시하는 유형과는 표현 방식 조율이 필요합니다.',
+                work: '전략, 기획, 분석, 개발, 연구, 시스템 설계처럼 장기 설계가 필요한 일에 강합니다.',
+                growth: '생각한 결론을 공유하기 전에 과정과 이유를 함께 말하면 설득력이 크게 올라갑니다.'
+            },
+            INTP: {
+                name: '논리술사',
+                summary: '개념과 원리를 파고들며 세상을 이해하려는 탐구형 유형입니다.',
+                traits: '정답보다 원리를 알고 싶어 하고, 익숙한 규칙도 논리적으로 맞지 않으면 쉽게 받아들이지 않습니다.',
+                strengths: '새로운 관점, 문제 분석, 가설 세우기에 강합니다. 복잡한 지식을 연결해 독창적인 설명을 만듭니다.',
+                cautions: '생각이 많아 실행이 늦어질 수 있습니다. 감정적 대화에서 너무 분석적으로 반응하면 거리감이 생깁니다.',
+                love: '친구처럼 편한 대화와 지적 호기심이 중요합니다. 지나친 통제보다 자유로운 관계에서 애정이 깊어집니다.',
+                best: 'ENTJ, ENFJ처럼 방향성과 실행력을 더해주는 유형과 시너지가 좋습니다.',
+                challenge: 'ESFP, ESFJ처럼 즉흥성과 관계 표현이 강한 유형과는 생활 리듬 차이가 날 수 있습니다.',
+                work: '연구, 데이터, 개발, 설계, 글쓰기, 분석 업무처럼 깊이 파고드는 일이 잘 맞습니다.',
+                growth: '완벽한 답을 기다리기보다 70% 상태에서 작게 실행하면 기회가 빨라집니다.'
+            },
+            ENTJ: {
+                name: '통솔자',
+                summary: '목표를 세우고 사람과 자원을 움직여 결과를 만드는 추진형 유형입니다.',
+                traits: '효율, 성과, 방향성을 중요하게 봅니다. 애매한 상황에서도 결정을 내리고 앞으로 나아가려 합니다.',
+                strengths: '리더십, 판단력, 실행 계획 수립이 강합니다. 큰 프로젝트를 단계별로 나눠 밀어붙입니다.',
+                cautions: '상대의 감정 속도를 놓치면 독단적으로 보일 수 있습니다. 쉬는 시간을 비효율로 여기지 않는 연습이 필요합니다.',
+                love: '존중과 성장 욕구가 중요합니다. 함께 목표를 세우고 서로를 발전시키는 관계에서 만족도가 높습니다.',
+                best: 'INFP, INTP처럼 깊은 내면과 분석력을 가진 유형이 균형을 만들어줍니다.',
+                challenge: 'ISFP, ISFJ처럼 조용히 감정을 쌓는 유형과는 말투와 압박감 조절이 필요합니다.',
+                work: '경영, 기획, 영업 전략, 프로젝트 리딩, 창업, 조직 운영에 강합니다.',
+                growth: '빠른 결론 전에 상대가 받아들일 시간을 주면 리더십이 더 단단해집니다.'
+            },
+            ENTP: {
+                name: '변론가',
+                summary: '가능성을 발견하고 기존 방식을 뒤집는 아이디어형 유형입니다.',
+                traits: '새로운 주제와 토론을 좋아하고, 고정된 답보다 다양한 가능성을 탐색합니다.',
+                strengths: '순발력, 설득력, 창의적 문제 해결이 뛰어납니다. 위기에서도 대안을 빠르게 찾습니다.',
+                cautions: '흥미가 떨어지면 마무리가 약해질 수 있습니다. 장난스러운 반박이 상대에게 공격처럼 느껴질 수 있습니다.',
+                love: '재미있는 대화와 자유로운 분위기가 중요합니다. 지루함보다 함께 성장하는 자극을 원합니다.',
+                best: 'INFJ, INTJ처럼 깊이와 방향성을 가진 유형과 좋은 시너지가 납니다.',
+                challenge: 'ISFJ, ESFJ처럼 안정과 예측을 중시하는 유형과는 즉흥성 조율이 필요합니다.',
+                work: '마케팅, 기획, 창업, 컨설팅, 콘텐츠, 세일즈처럼 변화와 설득이 있는 일이 잘 맞습니다.',
+                growth: '아이디어를 결과로 남기는 마감 구조를 만들면 재능이 더 크게 인정받습니다.'
+            },
+            INFJ: {
+                name: '옹호자',
+                summary: '사람의 내면을 깊게 읽고 의미 있는 방향을 찾는 통찰형 유형입니다.',
+                traits: '조용하지만 신념이 강하고, 관계의 분위기와 숨은 감정을 민감하게 읽습니다.',
+                strengths: '상담, 글쓰기, 비전 제시, 사람의 가능성을 보는 능력이 좋습니다.',
+                cautions: '혼자 너무 많이 해석하고 지칠 수 있습니다. 완벽한 이해를 기대하면 관계가 무거워질 수 있습니다.',
+                love: '깊고 진정성 있는 관계를 원합니다. 가벼운 말보다 일관된 태도와 정서적 안전감이 중요합니다.',
+                best: 'ENTP, ENFP처럼 시야를 넓혀주고 표현을 끌어내는 유형과 잘 맞습니다.',
+                challenge: 'ESTP, ESTJ처럼 빠른 행동 중심 유형과는 속도 차이를 조율해야 합니다.',
+                work: '상담, 교육, 브랜딩, 글쓰기, 기획, 사회적 가치가 있는 일에 강합니다.',
+                growth: '상대의 감정을 모두 책임지지 않는 선 긋기가 필요합니다.'
+            },
+            INFP: {
+                name: '중재자',
+                summary: '가치와 진정성을 중시하며 자기만의 세계가 깊은 감성형 유형입니다.',
+                traits: '겉으로는 부드럽지만 내면의 기준은 분명합니다. 의미 없는 경쟁보다 진심이 담긴 일을 원합니다.',
+                strengths: '공감, 창작, 언어 표현, 가치 중심의 선택에 강합니다. 사람의 상처와 가능성을 잘 알아봅니다.',
+                cautions: '현실 조건을 미루면 좋은 의도도 흐려질 수 있습니다. 거절을 어려워해 에너지가 새기 쉽습니다.',
+                love: '진심 어린 대화, 작은 배려, 감정의 안전감이 중요합니다. 속도를 강요받으면 마음이 닫힙니다.',
+                best: 'ENFJ, ENTJ처럼 방향성과 보호감을 주는 유형과 보완이 좋습니다.',
+                challenge: 'ESTJ, ESTP처럼 직설적이고 빠른 유형과는 감정 표현 방식 차이가 큽니다.',
+                work: '글쓰기, 디자인, 상담, 교육, 예술, 브랜드 스토리, 커뮤니티에 잘 맞습니다.',
+                growth: '감정의 진정성과 현실적 마감선을 함께 세우면 결과물이 강해집니다.'
+            },
+            ENFJ: {
+                name: '선도자',
+                summary: '사람을 연결하고 성장시키는 데 강한 관계 리더형 유형입니다.',
+                traits: '분위기를 읽고 사람을 챙기는 능력이 좋습니다. 함께 나아갈 방향을 제시하려는 힘이 있습니다.',
+                strengths: '소통, 코칭, 조직 문화, 발표, 관계 조율에 강합니다.',
+                cautions: '모두를 책임지려 하면 쉽게 지칩니다. 인정 욕구 때문에 자신의 필요를 뒤로 미룰 수 있습니다.',
+                love: '표현과 확인이 중요합니다. 상대와 미래를 이야기하고 함께 성장하는 관계에서 안정감을 느낍니다.',
+                best: 'INFP, INTP처럼 깊은 내면이나 분석력을 가진 유형과 균형이 좋습니다.',
+                challenge: 'ISTP, INTJ처럼 표현이 적은 유형과는 애정 확인 방식 조율이 필요합니다.',
+                work: '교육, HR, 상담, 마케팅, 리더십, 커뮤니티 운영, 대외 커뮤니케이션에 강합니다.',
+                growth: '도와주기 전에 상대가 원하는 도움인지 확인하면 관계 피로가 줄어듭니다.'
+            },
+            ENFP: {
+                name: '활동가',
+                summary: '가능성과 사람의 매력을 발견하는 자유로운 영감형 유형입니다.',
+                traits: '호기심이 많고 감정 표현이 풍부합니다. 새로운 사람과 아이디어에서 에너지를 얻습니다.',
+                strengths: '창의력, 분위기 전환, 설득, 관계 확장, 콘텐츠 아이디어에 강합니다.',
+                cautions: '시작은 빠르지만 반복 유지가 어려울 수 있습니다. 감정이 올라오면 판단이 흔들립니다.',
+                love: '재미, 진심, 자유가 모두 필요합니다. 나를 제한하기보다 응원해주는 사람에게 깊게 끌립니다.',
+                best: 'INTJ, INFJ처럼 방향성과 깊이를 가진 유형이 좋은 중심을 잡아줍니다.',
+                challenge: 'ISTJ, ESTJ처럼 규칙과 계획을 중시하는 유형과는 생활 방식 조율이 필요합니다.',
+                work: '콘텐츠, 마케팅, 교육, 창업, 기획, 커뮤니티, 퍼스널 브랜딩에 잘 맞습니다.',
+                growth: '좋아하는 일을 오래 가게 만들 작은 루틴이 필요합니다.'
+            },
+            ISTJ: {
+                name: '현실주의자',
+                summary: '책임감과 절차를 중시하며 안정적으로 결과를 쌓는 유형입니다.',
+                traits: '검증된 방식, 약속, 정확성을 중요하게 생각합니다. 말보다 행동으로 신뢰를 보여줍니다.',
+                strengths: '성실함, 기록, 관리, 품질 유지, 리스크 점검에 강합니다.',
+                cautions: '변화가 빠른 상황에서 융통성이 부족해 보일 수 있습니다. 감정 표현이 적어 오해를 살 수 있습니다.',
+                love: '가벼운 표현보다 꾸준한 책임과 신뢰를 중시합니다. 안정적인 생활 리듬이 관계 만족도를 높입니다.',
+                best: 'ESFP, ESTP처럼 활력과 유연함을 주는 유형과 보완이 좋습니다.',
+                challenge: 'ENFP, ENTP처럼 즉흥성이 강한 유형과는 계획 수준을 조율해야 합니다.',
+                work: '회계, 행정, 운영, 품질관리, 법무, 데이터 관리처럼 정확성이 중요한 일에 강합니다.',
+                growth: '예외 상황을 실패가 아니라 업데이트로 받아들이면 적응력이 커집니다.'
+            },
+            ISFJ: {
+                name: '수호자',
+                summary: '세심한 배려와 책임감으로 주변을 안정시키는 유형입니다.',
+                traits: '사람의 필요를 잘 알아차리고, 조용히 챙기는 방식으로 애정을 표현합니다.',
+                strengths: '돌봄, 기억력, 실무 지원, 관계 유지, 섬세한 관리에 강합니다.',
+                cautions: '싫어도 참고 넘기다 한 번에 지칠 수 있습니다. 자신의 욕구를 뒤로 미루기 쉽습니다.',
+                love: '안정감, 예의, 꾸준한 연락을 중요하게 여깁니다. 말보다 행동의 성실함에 끌립니다.',
+                best: 'ESFP, ESTP처럼 활기를 주고 현재를 즐기게 해주는 유형과 잘 맞습니다.',
+                challenge: 'ENTP, INTJ처럼 직설적이거나 논리 중심인 유형과는 정서 확인이 필요합니다.',
+                work: '간호, 교육, 행정, 고객관리, 운영지원, 회계 보조처럼 꼼꼼함이 필요한 일에 강합니다.',
+                growth: '부탁을 거절해도 관계가 끝나지 않는다는 경험을 쌓아야 합니다.'
+            },
+            ESTJ: {
+                name: '경영자',
+                summary: '현실적인 기준과 조직력을 바탕으로 일을 완성하는 관리형 유형입니다.',
+                traits: '분명한 규칙, 책임, 성과를 중요하게 봅니다. 애매한 상황을 정리하려는 힘이 강합니다.',
+                strengths: '운영, 리더십, 일정관리, 실행 통제, 의사결정에 강합니다.',
+                cautions: '상대의 감정이나 사정을 비효율로 볼 수 있습니다. 지나친 지적은 관계를 경직시킵니다.',
+                love: '믿음직한 태도와 현실적인 미래 계획을 중요하게 생각합니다. 약속을 지키는 사람이 좋습니다.',
+                best: 'ISFP, INFP처럼 부드러움과 감수성을 더해주는 유형과 보완이 됩니다.',
+                challenge: 'ENFP, INTP처럼 자유와 탐색을 중시하는 유형과는 통제감 조율이 필요합니다.',
+                work: '관리, 영업관리, 공공기관, 운영, 재무, 현장 리딩, 조직 시스템화에 강합니다.',
+                growth: '정답을 알려주기보다 선택지를 함께 정리하면 리더십이 부드러워집니다.'
+            },
+            ESFJ: {
+                name: '집정관',
+                summary: '사람 사이의 조화와 소속감을 중요하게 여기는 관계 중심 유형입니다.',
+                traits: '분위기와 예의를 잘 챙기고, 주변 사람이 편안한지 민감하게 살핍니다.',
+                strengths: '관계 관리, 행사 운영, 서비스, 협업, 실무 조율에 강합니다.',
+                cautions: '타인의 평가에 흔들릴 수 있습니다. 모두에게 좋은 사람이 되려다 지칩니다.',
+                love: '자주 표현하고 함께 시간을 보내는 관계에서 안정감을 느낍니다. 무심함에는 쉽게 상처받습니다.',
+                best: 'ISFP, ISTP처럼 차분함과 현실 감각을 주는 유형과 균형이 좋습니다.',
+                challenge: 'INTP, INTJ처럼 표현이 적고 독립적인 유형과는 애정 언어가 다를 수 있습니다.',
+                work: '서비스, 교육, 인사, 운영, 고객관리, 커뮤니티, 행사 기획에 잘 맞습니다.',
+                growth: '인정받기 위해 무리하기보다 내 기준의 만족을 먼저 확인해야 합니다.'
+            },
+            ISTP: {
+                name: '장인',
+                summary: '문제를 직접 다루고 해결하는 실용적 관찰형 유형입니다.',
+                traits: '말보다 행동이 빠르고, 필요한 순간에 집중력이 살아납니다. 자유와 독립성을 중요하게 여깁니다.',
+                strengths: '위기 대응, 도구 활용, 분석적 관찰, 실전 문제 해결에 강합니다.',
+                cautions: '감정 설명을 귀찮아하면 가까운 사람이 소외감을 느낄 수 있습니다. 지루함을 못 견디는 편입니다.',
+                love: '간섭이 적고 편안한 관계를 선호합니다. 말보다 함께 무언가를 하는 시간이 애정 표현입니다.',
+                best: 'ESFJ, ESTJ처럼 관계와 구조를 보완해주는 유형과 균형이 좋습니다.',
+                challenge: 'ENFJ, INFJ처럼 감정 공유를 깊게 원하는 유형과는 표현 연습이 필요합니다.',
+                work: '기술, 엔지니어링, 스포츠, 정비, 데이터, 보안, 실전형 문제 해결에 강합니다.',
+                growth: '혼자 해결하기 전에 최소한의 상황 공유를 하면 신뢰가 높아집니다.'
+            },
+            ISFP: {
+                name: '모험가',
+                summary: '감각과 감정을 섬세하게 느끼며 자기만의 아름다움을 추구하는 유형입니다.',
+                traits: '조용하지만 취향과 가치가 분명합니다. 압박보다 자연스러운 흐름에서 능력이 나옵니다.',
+                strengths: '미감, 공감, 세심함, 현장 감각, 조용한 실행력이 좋습니다.',
+                cautions: '갈등을 피하다가 속마음이 쌓일 수 있습니다. 즉흥적 소비나 결정에 흔들릴 때가 있습니다.',
+                love: '말보다 분위기와 행동의 진심을 봅니다. 편안하고 강요 없는 관계에서 마음을 엽니다.',
+                best: 'ESTJ, ESFJ처럼 현실적 안정과 추진력을 주는 유형과 보완이 됩니다.',
+                challenge: 'ENTJ, ESTJ와는 속도와 지시 방식 조율이 필요합니다.',
+                work: '디자인, 예술, 뷰티, 돌봄, 동물, 현장 실무, 감각 기반 콘텐츠에 잘 맞습니다.',
+                growth: '싫은 것을 조용히 참기보다 작은 불편부터 말하는 연습이 필요합니다.'
+            },
+            ESTP: {
+                name: '사업가',
+                summary: '현장 감각과 순발력으로 기회를 잡는 행동형 유형입니다.',
+                traits: '지금 눈앞의 기회와 경험을 중시합니다. 빠르게 움직이고 직접 부딪히며 배웁니다.',
+                strengths: '협상, 위기 대응, 영업, 운동감각, 실전 실행력이 뛰어납니다.',
+                cautions: '장기 계획이나 반복 관리가 약해질 수 있습니다. 말이 직설적이면 상대가 상처받을 수 있습니다.',
+                love: '함께 즐기고 움직이는 관계를 좋아합니다. 지나친 구속보다 신뢰 기반의 자유가 필요합니다.',
+                best: 'ISFJ, ISTJ처럼 안정과 꾸준함을 주는 유형과 보완이 좋습니다.',
+                challenge: 'INFJ, INFP처럼 깊은 의미와 감정 대화를 중시하는 유형과는 속도 차이가 납니다.',
+                work: '영업, 창업, 스포츠, 이벤트, 현장관리, 협상, 퍼포먼스 중심 업무에 강합니다.',
+                growth: '기회를 잡은 뒤 유지하는 루틴을 만들면 성과가 오래 갑니다.'
+            },
+            ESFP: {
+                name: '연예인',
+                summary: '사람과 분위기에 활력을 불어넣는 현재 중심의 표현형 유형입니다.',
+                traits: '감정 표현이 자연스럽고, 사람들과 함께할 때 에너지가 살아납니다. 경험을 통해 배우는 편입니다.',
+                strengths: '친화력, 분위기 전환, 감각, 표현력, 현장 대응에 강합니다.',
+                cautions: '즉흥성이 커지면 중요한 일을 미룰 수 있습니다. 외부 반응에 기분이 크게 흔들릴 수 있습니다.',
+                love: '즐거움, 애정 표현, 함께하는 시간이 중요합니다. 무뚝뚝하고 반응 없는 관계는 지치기 쉽습니다.',
+                best: 'ISTJ, ISFJ처럼 안정과 책임감을 주는 유형과 균형이 좋습니다.',
+                challenge: 'INTJ, INTP처럼 표현이 적은 유형과는 온도 차이를 느낄 수 있습니다.',
+                work: '엔터테인먼트, 서비스, 판매, 교육, 행사, 콘텐츠, 뷰티, 현장 커뮤니케이션에 잘 맞습니다.',
+                growth: '즐거운 목표를 작게 쪼개 일정에 넣으면 꾸준함이 생깁니다.'
+            }
+        };
+    }
+}
+
 class LottoBall extends HTMLElement {
     constructor() { super(); this.attachShadow({ mode: 'open' }); }
     connectedCallback() { this.render(); }
@@ -876,6 +1133,7 @@ customElements.define('lotto-ball', LottoBall);
 const langManager = new LanguageManager();
 const fortuneManager = new FortuneManager();
 window.psycheTest = new PsycheTestManager();
+const mbtiManager = new MBTIManager();
 
 document.getElementById('generate-btn').addEventListener('click', () => {
     const container = document.getElementById('lotto-balls-container');
