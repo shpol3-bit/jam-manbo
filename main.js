@@ -172,31 +172,11 @@ class FortuneManager {
         const yearSel = document.getElementById('birth-year');
         const monthSel = document.getElementById('birth-month');
         const daySel = document.getElementById('birth-day');
-        const hourSel = document.getElementById('birth-hour');
-        const minSel = document.getElementById('birth-minute');
-        const meridiemSel = document.getElementById('birth-meridiem');
-
         if (!yearSel) return;
-
         const lang = document.documentElement.lang || 'ko';
-        
-        for (let i = new Date().getFullYear(); i >= 1930; i--) {
-            yearSel.add(new Option(`${i}${lang==='ko'?'년':''}`, i));
-        }
-        for (let i = 1; i <= 12; i++) {
-            monthSel.add(new Option(`${i}${lang==='ko'?'월':''}`, i));
-        }
-        for (let i = 1; i <= 31; i++) {
-            daySel.add(new Option(`${i}${lang==='ko'?'일':''}`, i));
-        }
-        meridiemSel.add(new Option(lang==='ko'?'오전':'AM', 'AM'));
-        meridiemSel.add(new Option(lang==='ko'?'오후':'PM', 'PM'));
-        for (let i = 1; i <= 12; i++) {
-            hourSel.add(new Option(`${i}${lang==='ko'?'시':''}`, i));
-        }
-        for (let i = 0; i < 60; i += 10) {
-            minSel.add(new Option(`${i}${lang==='ko'?'분':''}`, i));
-        }
+        for (let i = new Date().getFullYear(); i >= 1930; i--) yearSel.add(new Option(`${i}${lang==='ko'?'년':''}`, i));
+        for (let i = 1; i <= 12; i++) monthSel.add(new Option(`${i}${lang==='ko'?'월':''}`, i));
+        for (let i = 1; i <= 31; i++) daySel.add(new Option(`${i}${lang==='ko'?'일':''}`, i));
     }
     generateFortune() {
         const year = document.getElementById('birth-year').value;
@@ -223,9 +203,7 @@ class FortuneManager {
         ];
         const selected = fortunes[seed % fortunes.length];
         return {
-            today: selected.overview,
-            romance: selected.romance,
-            wealth: selected.wealth,
+            today: selected.overview, romance: selected.romance, wealth: selected.wealth,
             saju: lang === 'ko' ? `분석 결과, 당신의 사주는 '금(金)'과 '토(土)'의 조화가 돋보입니다. 이는 성실함과 견고한 의지를 바탕으로 어떠한 역경도 이겨낼 수 있는 강인한 생명력을 상징합니다.` : `According to the analysis, your Saju highlights the harmony between 'Metal' and 'Earth'. This symbolizes a strong vitality that can overcome any adversity.`
         };
     }
@@ -293,35 +271,41 @@ class PsycheTestManager {
         current.choices.forEach((c, i) => {
             choicesHtml += `<div class="choice-item" onclick="psycheTest.showResult('${testType}', ${i+1})">${SVG_ASSETS[testType][i] || ''}<p>${c}</p></div>`;
         });
-
         this.content.innerHTML = `<h3>${current.title}</h3><p>${current.q}</p><div class="choice-grid">${choicesHtml}</div>`;
     }
     showResult(type, choice) {
         const lang = document.documentElement.lang || 'ko';
         const results = {
             ocean: [
-                lang==='ko'?"안정과 조화를 중시하며 꾸준한 성장을 선호합니다.":"Values stability and harmony, prefers steady growth.",
-                lang==='ko'?"도전을 즐기고 개척 정신이 강한 모험가입니다.":"An adventurer with a strong pioneering spirit."
+                lang==='ko'?"평화와 안정을 중시하는 타입입니다. 갈등이 적고 명확하고 안정적인 커리어 경로를 선호합니다. 주변 사람들과 조화를 이루며 꾸준히 성장하는 것에 큰 가치를 둡니다. 당신의 내면은 고요한 바다처럼 깊고 따뜻한 에너지를 품고 있습니다.":"Values stability and harmony, prefers steady growth. Your inner self holds deep and warm energy like a calm sea.",
+                lang==='ko'?"도전을 즐기고 개척 정신이 강한 모험가입니다. 위험이 따르더라도 큰 보상이 있는 환경에서 능력을 발휘합니다. 남들이 가지 않은 길을 개척하며 자신의 존재감을 증명하고 싶어 합니다. 웅장한 절벽처럼 강인한 의지를 지닌 사람입니다.":"An adventurer with a strong pioneering spirit. You excel in high-reward environments and possess strong will like a grand cliff."
             ],
             forest: [
-                lang==='ko'?"신중하고 믿음직하며 사람들의 의지가 됩니다.":"Cautions and reliable, someone people lean on.",
-                lang==='ko'?"직관이 뛰어나고 내면의 통찰력이 깊습니다.":"Highly intuitive with deep inner insight."
+                lang==='ko'?"지혜롭고 신중하며 신뢰를 주는 타입입니다. 사람들은 당신의 묵직한 존재감과 장기적인 시야에 의지합니다. 어떤 상황에서도 흔들리지 않는 뿌리 깊은 가치관을 가지고 있습니다. 거대한 고목처럼 든든한 버팀목이 되어주는 존재입니다.":"Wise and cautious, someone people lean on. You have deep-rooted values and act as a reliable support like a giant ancient tree.",
+                lang==='ko'?"감수성이 풍부하고 내면 세계가 깊은 타입입니다. 직관력이 뛰어나며 자기 성찰을 중요하게 생각합니다. 눈에 보이는 것 너머의 본질을 꿰뚫어 보는 통찰력을 지녔습니다. 맑은 연못처럼 투명하고 순수한 영혼을 가진 예술가 기질이 있습니다.":"Highly intuitive with deep inner insight. You value self-reflection and possess an artist's soul, pure and transparent like a clear pond."
             ],
             door: [
-                lang==='ko'?"전통적인 가치와 경험을 중요하게 생각합니다.":"Values traditional values and experiences.",
-                lang==='ko'?"새로운 변화와 사회적 성공에 대한 열망이 큽니다.":"Ambitions for change and social success.",
-                lang==='ko'?"자신만의 독창적인 길을 가고자 하는 예술가 기질이 있습니다.":"Artist spirit seeking their own unique path."
+                lang==='ko'?"전통적인 가치와 경험을 중요하게 생각합니다. 갑작스러운 변화보다는 익숙함 속에서 안정을 찾으며, 과거의 교훈을 미래의 자산으로 삼을 줄 아는 지혜로운 사람입니다. 나무 문처럼 따뜻하고 편안한 분위기를 풍깁니다.":"Values traditional values and experiences. You find stability in familiarity and use past lessons as future assets, emitting a warm vibe like a wooden door.",
+                lang==='ko'?"새로운 변화와 사회적 성공에 대한 열망이 큽니다. 자신을 화려하게 가꾸는 것을 즐기며, 목표를 향해 당당하게 나아가는 추진력이 돋보입니다. 화려한 금속 문처럼 세련되고 현대적인 감각을 지녔습니다.":"Strong desire for change and social success. You have the drive to move boldly toward your goals with a sophisticated and modern sense like an ornate metal door.",
+                lang==='ko'?"자신만의 독창적인 길을 가고자 하는 예술가 기질이 있습니다. 남들의 시선보다는 내면의 목소리에 집중하며, 비밀스럽고 신비로운 매력을 지닌 사람입니다. 석문처럼 단단하고 묵직한 신념을 가지고 있습니다.":"An artistic spirit seeking a unique path. You focus on your inner voice rather than others' opinions, possessing a mysterious charm and solid beliefs like a stone door."
             ],
             oasis: [
-                lang==='ko'?"문제가 생기면 즉각적으로 해결하는 실천가입니다.":"A doer who solves problems immediately.",
-                lang==='ko'?"멀리 내다보고 에너지를 비축하는 전략가입니다.":"A strategist who looks far ahead and saves energy."
+                lang==='ko'?"문제가 생기면 즉각적으로 해결하는 실천가입니다. 위기 상황에서 본능적으로 가장 필요한 것을 파악하며, 군더더기 없는 빠른 의사결정이 장점입니다. 오아시스의 물처럼 생명력 넘치고 활기찬 에너지를 가지고 있습니다.":"A doer who solves problems immediately. You instinctively identify needs in crises and excel in quick decision-making, full of life like oasis water.",
+                lang==='ko'?"멀리 내다보고 에너지를 비축하는 전략가입니다. 당장의 갈증 해결보다 지속 가능한 안정을 먼저 생각하며, 신중하게 상황을 분석한 뒤 움직이는 타입입니다. 오아시스의 그늘처럼 사람들에게 휴식을 주는 편안한 사람입니다.":"A strategist who saves energy and looks ahead. You prioritize sustainable stability over immediate needs, providing comfort to others like the shade of an oasis."
             ],
             animal: [
-                lang==='ko'?"지식과 배움을 즐기며 차분하게 상황을 분석합니다.":"Enjoys knowledge and learning, analyzes situations calmly.",
-                lang==='ko'?"에너지가 넘치고 리더십이 뛰어나 집단을 이끕니다.":"Full of energy with excellent leadership skills."
+                lang==='ko'?"지식과 배움을 즐기며 차분하게 상황을 분석합니다. 혼자만의 시간을 통해 통찰력을 얻으며, 남들이 보지 못하는 어둠 속의 진실을 찾아내는 능력이 탁월합니다. 부엉이처럼 영리하고 객관적인 시각을 유지합니다.":"Enjoys knowledge and learning, analyzing situations calmly. You gain insight through solitude and excel at finding hidden truths, clever like an owl.",
+                lang==='ko'?"에너지가 넘치고 리더십이 뛰어나 집단을 이끕니다. 자신의 영역을 보호하려는 책임감이 강하며, 목표가 정해지면 거침없이 달려가는 용맹함을 가졌습니다. 호랑이처럼 위엄 있고 강렬한 카리스마를 내뿜습니다.":"Full of energy with excellent leadership. You have a strong sense of responsibility and the bravery to pursue goals relentlessly, majestic like a tiger."
             ]
         };
-        this.content.innerHTML = `<h3>${lang==='ko'?'분석 결과':'Result'}</h3><p class="test-result-text">${results[type][choice-1]}</p><button onclick="psycheTest.modal.classList.add('hidden')" style="margin-top:20px;">${lang==='ko'?'닫기':'Close'}</button>`;
+
+        const resultSvg = SVG_ASSETS[type][choice-1];
+        this.content.innerHTML = `
+            <h3>${lang==='ko'?'분석 결과':'Analysis Result'}</h3>
+            <div class="result-illustration">${resultSvg}</div>
+            <p class="test-result-text">${results[type][choice-1]}</p>
+            <button onclick="psycheTest.modal.classList.add('hidden')" style="margin-top:20px;">${lang==='ko'?'닫기':'Close'}</button>
+        `;
     }
 }
 
