@@ -48,7 +48,7 @@
 
     <main class="container">
         <div class="theme-toggle">
-            <button id="theme-btn">🌙 Dark Mode</button>
+            <button id="theme-btn">다크 모드</button>
         </div>
 
         <!-- 1. HOME PORTAL VIEW -->
@@ -119,6 +119,34 @@
                     </div>
                     <button type="submit" id="check-fortune-btn" data-i18n="btn-fortune">운명 확인하기</button>
                 </form>
+            </div>
+
+            <div class="input-card compatibility-lookup-card">
+                <h2>궁합 조회</h2>
+                <p>내 사주 결과를 먼저 확인한 뒤, 상대의 분위기와 관계 유형을 선택하면 두 사람의 흐름을 따로 살펴볼 수 있습니다.</p>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="compatibility-type">상대의 주요 성향</label>
+                        <select id="compatibility-type">
+                            <option value="wood">성장형 - 다정하고 가능성을 중시함</option>
+                            <option value="fire">표현형 - 밝고 감정 표현이 빠름</option>
+                            <option value="earth">안정형 - 현실적이고 책임감이 강함</option>
+                            <option value="metal">원칙형 - 기준이 분명하고 신뢰를 중시함</option>
+                            <option value="water">공감형 - 섬세하고 속마음을 깊게 봄</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="compatibility-relation">관계 유형</label>
+                        <select id="compatibility-relation">
+                            <option value="romance">연애·결혼</option>
+                            <option value="friend">친구·지인</option>
+                            <option value="work">직장·동업</option>
+                            <option value="family">가족·가까운 관계</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" id="check-compatibility-btn">궁합 조회하기</button>
+                <div id="compatibility-results" class="compatibility-result hidden"></div>
             </div>
 
             <div id="fortune-results" class="results-container hidden">
@@ -210,7 +238,7 @@
                 <li><a href="about.html" data-i18n="footer-about">소개</a></li>
                 <li><a href="contact.html" data-i18n="footer-contact">문의하기</a></li>
             </ul>
-            <p class="copyright">&copy; 2026 InsightMaster. All rights reserved. <span data-i18n="footer-play-responsibly">책임감 있게 즐겨주세요.</span></p>
+            <p class="copyright">&copy; 2026 InsightMaster. 모든 권리 보유. <span data-i18n="footer-play-responsibly">책임감 있게 즐겨주세요.</span></p>
         </div>
     </footer>
 

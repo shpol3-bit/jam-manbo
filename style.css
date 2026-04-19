@@ -188,7 +188,7 @@ h1 {
     grid-template-columns: 0.9fr 0.9fr 0.9fr;
 }
 
-#check-fortune-btn, #generate-btn, .start-test-btn {
+#check-fortune-btn, #check-compatibility-btn, #generate-btn, .start-test-btn {
     width: 100%;
     background: var(--primary-color);
     color: white;
@@ -345,6 +345,29 @@ h1 {
     margin: 0;
 }
 
+.fortune-deep-reading {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 18px 0;
+}
+
+.fortune-deep-reading article {
+    background: var(--bg-color);
+    border: 1px solid var(--shadow);
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.fortune-deep-reading h4 {
+    color: var(--primary-color);
+    margin: 0 0 8px;
+}
+
+.fortune-deep-reading p {
+    margin: 0;
+}
+
 .fortune-highlights {
     display: flex;
     flex-wrap: wrap;
@@ -373,6 +396,51 @@ h1 {
     border-left: 4px solid var(--primary-color);
     border-radius: 8px;
     padding: 10px 12px;
+}
+
+.compatibility-lookup-card {
+    margin-top: 22px;
+}
+
+.compatibility-lookup-card h2 {
+    color: var(--primary-color);
+    margin-top: 0;
+}
+
+.compatibility-lookup-card p {
+    color: var(--secondary-color);
+    margin-top: 0;
+}
+
+#check-compatibility-btn {
+    margin-top: 12px;
+}
+
+.compatibility-result {
+    background: var(--container-bg);
+    border-top: 4px solid var(--accent-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px var(--shadow);
+    margin-top: 20px;
+    padding: 20px;
+    text-align: left;
+}
+
+.compatibility-score {
+    align-items: center;
+    background: var(--bg-color);
+    border: 1px solid var(--shadow);
+    border-radius: 8px;
+    display: flex;
+    gap: 14px;
+    margin: 14px 0;
+    padding: 14px;
+}
+
+.compatibility-score strong {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    white-space: nowrap;
 }
 
 .test-grid {
@@ -819,7 +887,7 @@ h1 {
 .hidden { display: none; }
 
 @media (max-width: 768px) {
-    .portal-grid, .fortune-card-grid, .test-grid, .choice-grid, .fortune-query-tabs, .mbti-guide, .mbti-type-grid, .mbti-info-grid, .mbti-detail-head {
+    .portal-grid, .fortune-card-grid, .test-grid, .choice-grid, .fortune-query-tabs, .fortune-deep-reading, .mbti-guide, .mbti-type-grid, .mbti-info-grid, .mbti-detail-head {
         grid-template-columns: 1fr;
     }
     .navbar { flex-direction: column; gap: 10px; }

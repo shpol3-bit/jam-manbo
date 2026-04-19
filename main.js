@@ -129,6 +129,10 @@ class FortuneManager {
         this.meridiemSelect = document.getElementById('birth-meridiem');
         this.hourSelect = document.getElementById('birth-hour');
         this.minuteSelect = document.getElementById('birth-minute');
+        this.compatibilityType = document.getElementById('compatibility-type');
+        this.compatibilityRelation = document.getElementById('compatibility-relation');
+        this.compatibilityButton = document.getElementById('check-compatibility-btn');
+        this.compatibilityResults = document.getElementById('compatibility-results');
         this.currentReport = null;
         this.init();
     }
@@ -154,6 +158,9 @@ class FortuneManager {
                 this.generateFortune();
             });
         }
+        if (this.compatibilityButton) {
+            this.compatibilityButton.addEventListener('click', () => this.generateCompatibility());
+        }
     }
 
     generateFortune() {
@@ -162,6 +169,21 @@ class FortuneManager {
         const results = this.calculate(birthInfo);
         this.currentReport = results;
         this.displayResults(results);
+    }
+
+    generateCompatibility() {
+        const birthInfo = this.getBirthInfo();
+        if (!birthInfo || !this.compatibilityResults) return;
+        if (!this.currentReport) {
+            this.currentReport = this.calculate(birthInfo);
+            this.displayResults(this.currentReport);
+        }
+
+        const partnerElement = this.compatibilityType.value || 'earth';
+        const relationType = this.compatibilityRelation.value || 'romance';
+        this.compatibilityResults.innerHTML = this.renderCompatibility(this.currentReport, partnerElement, relationType);
+        this.compatibilityResults.classList.remove('hidden');
+        this.compatibilityResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     populateBirthControls(keepValues = false) {
@@ -714,7 +736,7 @@ class FortuneManager {
             <div class="result-card wide fortune-intro">
                 <h3>${lang === 'ko' ? '정밀 사주풀이 항목 조회' : 'Detailed Saju Reading'}</h3>
                 <p>${lang === 'ko' ? '출생 정보' : 'Birth info'}: ${data.birthLabel}</p>
-                <p class="fortune-guide">${lang === 'ko' ? '아래 항목을 누르면 GPT 전문가 스타일의 부드러운 한글 해설과 함께 필요한 풀이를 하나씩 조회할 수 있습니다.' : 'Select a topic below to view each reading one by one with an expert-style explanation.'}</p>
+                <p class="fortune-guide">${lang === 'ko' ? '아래 항목을 누르면 사주 전문가가 풀어주듯 차분한 설명과 함께 필요한 풀이를 하나씩 조회할 수 있습니다.' : 'Select a topic below to view each reading one by one with a calm expert-style explanation.'}</p>
             </div>
             <div class="fortune-query-tabs">
                 ${data.categories.map((category, index) => `
@@ -754,7 +776,7 @@ class FortuneManager {
             <h3>${category.title}</h3>
             <p class="fortune-summary">${category.summary}</p>
             <div class="fortune-expert-note">
-                <strong>${document.documentElement.lang === 'ko' ? 'AI 사주 전문가 코멘트' : 'AI Saju Expert Note'}</strong>
+                <strong>${document.documentElement.lang === 'ko' ? '사주 전문가 해설' : 'Saju Expert Note'}</strong>
                 <p>${this.createExpertComment(category)}</p>
             </div>
             ${category.highlights ? `
@@ -763,11 +785,121 @@ class FortuneManager {
                 </div>
             ` : ''}
             ${category.paragraphs.map(paragraph => `<p>${paragraph}</p>`).join('')}
+            <div class="fortune-deep-reading">
+                ${this.createDeepReading(category).map(item => `
+                    <article>
+                        <h4>${item.title}</h4>
+                        <p>${item.text}</p>
+                    </article>
+                `).join('')}
+            </div>
             ${category.checklist ? `
                 <div class="fortune-checklist">
                     ${category.checklist.map(item => `<div>${item}</div>`).join('')}
                 </div>
             ` : ''}
+        `;
+    }
+
+    createDeepReading(category) {
+        const lang = document.documentElement.lang || 'ko';
+        if (lang !== 'ko') return [];
+
+        const common = {
+            saju: [
+                { title: '기질의 뿌리', text: '사주 원국은 한 사람의 성향이 어디에서 시작되는지 보여줍니다. 겉으로 보이는 성격만 보는 것이 아니라, 반복해서 선택하게 되는 방식과 불편함을 느끼는 상황까지 함께 읽어야 더 정확합니다.' },
+                { title: '균형을 잡는 법', text: '강한 기운은 재능이지만 과하면 부담이 됩니다. 부족한 기운은 약점이 아니라 삶의 균형을 회복하는 방향이므로, 작은 습관으로 보완할수록 전체 운이 부드럽게 움직입니다.' }
+            ],
+            yearly: [
+                { title: '올해의 큰 흐름', text: '올해는 한 번의 선택으로 모든 것이 결정되는 해라기보다, 반복해서 쌓아온 습관이 결과로 드러나는 시기입니다. 중요한 결정은 감정의 파도보다 생활 구조가 받쳐줄 수 있는지를 기준으로 보세요.' },
+                { title: '실천 포인트', text: '목표를 많이 세우기보다 오래 유지할 수 있는 기준을 세우는 것이 좋습니다. 일, 관계, 돈 중 가장 복잡한 영역 하나부터 정리하면 다른 문제도 연쇄적으로 가벼워집니다.' }
+            ],
+            monthly: [
+                { title: '이번 달의 체감 운', text: '한달 운세는 가까운 일정과 감정의 리듬을 읽는 데 유용합니다. 큰 방향보다 지금 정리해야 할 약속, 지출, 대화가 무엇인지 살피면 운을 현실적으로 활용할 수 있습니다.' },
+                { title: '월말 전 점검', text: '이번 달 안에 끝낼 일과 다음 달로 넘길 일을 구분하세요. 모든 일을 붙잡고 있으면 기회도 부담으로 느껴지므로, 남길 것과 내려놓을 것을 분명히 하는 것이 중요합니다.' }
+            ],
+            daily: [
+                { title: '오늘의 우선순위', text: '오늘은 큰 운보다 작은 선택의 질이 중요합니다. 바로 답하거나 바로 결제하거나 바로 결정하기 전에 한 번 확인하는 습관이 실수를 줄이고 좋은 흐름을 살립니다.' },
+                { title: '마음 관리', text: '감정이 앞설 때는 운이 막힌 것이 아니라 속도가 맞지 않는 경우가 많습니다. 짧은 산책, 물 한 잔, 메모 정리처럼 몸을 먼저 안정시키면 판단도 자연스럽게 선명해집니다.' }
+            ],
+            compatibility: [
+                { title: '관계의 핵심', text: '궁합은 첫인상의 강렬함보다 반복되는 생활 장면에서 더 정확하게 드러납니다. 약속을 지키는 방식, 서운함을 푸는 방식, 피곤할 때의 태도를 보면 오래 갈 수 있는 관계인지 알 수 있습니다.' },
+                { title: '좋은 궁합의 조건', text: '좋은 궁합은 갈등이 없는 관계가 아니라 갈등 뒤에 회복할 수 있는 관계입니다. 서로의 속도를 인정하고, 감정을 시험하지 않으며, 현실적인 합의를 해나갈 때 관계운이 안정됩니다.' }
+            ],
+            wealth: [
+                { title: '돈의 흐름', text: '금전운은 수입의 크기만이 아니라 돈이 머무는 구조까지 함께 봐야 합니다. 기록, 고정비 점검, 충동 소비 관리가 좋아지면 같은 수입에서도 체감 재물운이 달라집니다.' },
+                { title: '주의할 판단', text: '급한 제안일수록 하루를 넘겨 다시 보는 것이 좋습니다. 좋은 돈은 불안으로 움직이지 않고, 명확한 숫자와 조건을 확인할수록 오래 남습니다.' }
+            ],
+            romance: [
+                { title: '마음의 흐름', text: '연애운은 상대의 마음을 맞히는 도구가 아니라 내가 어떤 방식으로 사랑을 주고받는지 이해하는 데 더 도움이 됩니다. 표현을 미루기보다 부드럽고 구체적으로 말할수록 관계가 편안해집니다.' },
+                { title: '관계 회복법', text: '서운함이 생겼을 때 결론부터 내리지 말고, 어떤 상황에서 어떤 마음이 들었는지 짧게 설명하세요. 관계는 맞고 틀림보다 회복하는 방식에서 깊어집니다.' }
+            ]
+        };
+
+        return common[category.id] || [
+            { title: '상세 해석', text: '이 항목은 지금의 선택을 더 차분하게 보기 위한 풀이입니다. 좋은 흐름은 키우고 부담이 되는 흐름은 줄이는 방향으로 읽으면 실제 생활에 더 잘 적용됩니다.' },
+            { title: '현실 적용', text: '운세는 정해진 결론이 아니라 선택의 기준입니다. 오늘 바로 바꿀 수 있는 작은 행동 하나를 정하면 풀이가 막연한 말이 아니라 생활의 변화로 이어집니다.' }
+        ];
+    }
+
+    renderCompatibility(report, partnerElement, relationType) {
+        const lang = document.documentElement.lang || 'ko';
+        if (lang !== 'ko') {
+            return '<h3>Compatibility Reading</h3><p>This feature is optimized for Korean readings.</p>';
+        }
+
+        const elementNames = {
+            wood: '목',
+            fire: '화',
+            earth: '토',
+            metal: '금',
+            water: '수'
+        };
+        const partnerLabels = {
+            wood: '성장형',
+            fire: '표현형',
+            earth: '안정형',
+            metal: '원칙형',
+            water: '공감형'
+        };
+        const relationLabels = {
+            romance: '연애·결혼',
+            friend: '친구·지인',
+            work: '직장·동업',
+            family: '가족·가까운 관계'
+        };
+        const myElement = Object.keys(report.scores).sort((a, b) => report.scores[b] - report.scores[a])[0];
+        const supportMap = { wood: 'fire', fire: 'earth', earth: 'metal', metal: 'water', water: 'wood' };
+        const controlMap = { wood: 'earth', earth: 'water', water: 'fire', fire: 'metal', metal: 'wood' };
+        const isSupport = supportMap[myElement] === partnerElement || supportMap[partnerElement] === myElement;
+        const isTension = controlMap[myElement] === partnerElement || controlMap[partnerElement] === myElement;
+        const score = isSupport ? 88 : isTension ? 67 : myElement === partnerElement ? 78 : 74;
+        const flow = isSupport ? '서로의 장점을 자연스럽게 살려주는 보완형 궁합' : isTension ? '끌림은 강하지만 속도와 표현을 맞춰야 하는 조율형 궁합' : myElement === partnerElement ? '비슷한 기준으로 빨리 가까워지지만 고집이 겹칠 수 있는 동질형 궁합' : '편안함과 차이를 함께 배우는 균형형 궁합';
+        const relationAdvice = {
+            romance: '연애나 결혼에서는 감정의 크기보다 생활 리듬을 맞추는 과정이 중요합니다. 연락 빈도, 돈 쓰는 방식, 휴식 시간처럼 현실적인 부분을 초반부터 부드럽게 이야기하면 관계가 오래 안정됩니다.',
+            friend: '친구 관계에서는 서로를 바꾸려 하기보다 각자의 속도를 인정할 때 편안해집니다. 자주 보지 않아도 약속과 신뢰가 지켜지면 오래 가는 인연으로 이어질 수 있습니다.',
+            work: '직장이나 동업 관계에서는 역할과 책임 범위를 문서로 정리하는 것이 좋습니다. 친밀감만 믿고 시작하기보다 돈, 일정, 의사결정 기준을 분명히 해야 좋은 궁합이 현실적인 성과로 이어집니다.',
+            family: '가족이나 가까운 관계에서는 말하지 않아도 알아주길 기대하는 순간 오해가 커질 수 있습니다. 작은 부탁과 서운함을 짧고 구체적으로 표현하면 관계의 피로가 줄어듭니다.'
+        };
+
+        return `
+            <h3>${relationLabels[relationType]} 궁합 결과</h3>
+            <p class="fortune-summary">나의 중심 기운은 ${elementNames[myElement]}, 상대는 ${partnerLabels[partnerElement]}(${elementNames[partnerElement]}) 흐름으로 보았습니다.</p>
+            <div class="compatibility-score">
+                <strong>${score}점</strong>
+                <span>${flow}</span>
+            </div>
+            <div class="fortune-expert-note">
+                <strong>사주 전문가 해설</strong>
+                <p>이 궁합은 상대를 좋다 나쁘다로 단정하기보다, 두 사람이 어떤 부분에서 편해지고 어디에서 반복적으로 부딪힐 수 있는지를 보는 풀이입니다. ${flow}이므로 관계의 초반 분위기보다 갈등이 생겼을 때 회복하는 방식까지 함께 보는 것이 좋습니다.</p>
+            </div>
+            <p>${relationAdvice[relationType]}</p>
+            <p>${isSupport ? `두 사람은 한쪽이 움직이면 다른 한쪽이 자연스럽게 힘을 보태는 흐름이 있습니다. 다만 편하다는 이유로 고마움을 생략하면 관계가 느슨해질 수 있으니, 작은 배려를 말로 확인해주는 습관이 좋습니다.` : isTension ? `두 사람은 서로에게 강한 자극을 줄 수 있습니다. 처음에는 매력으로 느껴지지만 시간이 지나면 말투, 속도, 결정 방식에서 피로가 생길 수 있으므로 중요한 이야기는 감정이 가라앉은 뒤 나누는 편이 좋습니다.` : `두 사람은 큰 충돌보다 생활 습관의 차이가 누적될 가능성이 있습니다. 관계를 오래 가져가려면 상대의 방식을 평가하기보다 합의 가능한 중간 지점을 만드는 것이 중요합니다.`}</p>
+            <div class="fortune-checklist">
+                <div>좋은 신호: 대화 뒤 마음이 더 복잡해지기보다 정리되는 느낌이 듭니다.</div>
+                <div>주의 신호: 같은 문제를 반복해서 참기만 하고 실제 합의가 없습니다.</div>
+                <div>관계운을 올리는 행동: 약속, 돈, 연락, 휴식에 대한 기준을 짧게 정리해 공유하세요.</div>
+            </div>
         `;
     }
 
@@ -1221,11 +1353,11 @@ document.getElementById('generate-btn').addEventListener('click', () => {
 const themeBtn = document.getElementById('theme-btn');
 let currentTheme = localStorage.getItem('theme') || 'light';
 document.documentElement.setAttribute('data-theme', currentTheme);
-themeBtn.textContent = currentTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+themeBtn.textContent = currentTheme === 'light' ? '다크 모드' : '라이트 모드';
 
 themeBtn.addEventListener('click', () => {
     currentTheme = currentTheme === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', currentTheme);
     localStorage.setItem('theme', currentTheme);
-    themeBtn.textContent = currentTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+    themeBtn.textContent = currentTheme === 'light' ? '다크 모드' : '라이트 모드';
 });
