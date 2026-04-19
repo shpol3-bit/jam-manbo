@@ -162,6 +162,50 @@ h1 {
     font-size: 1.2rem;
 }
 
+.content-rich-article {
+    text-align: left;
+    color: var(--text-color);
+}
+
+.content-rich-article h3 {
+    margin-top: 30px;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--shadow);
+    padding-bottom: 5px;
+}
+
+.safety-box {
+    background: rgba(255, 193, 7, 0.1);
+    border: 2px solid #ffc107;
+    border-radius: 12px;
+    padding: 30px;
+}
+
+.safety-box h2 {
+    color: #856404;
+    margin-top: 0;
+}
+
+.footer-brand {
+    margin-bottom: 20px;
+}
+
+.footer-brand .logo {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.footer-brand p {
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+}
+
+.copyright {
+    margin-top: 30px;
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+}
+
 .contact-section, .comments-section {
     margin-top: 60px;
     padding-top: 40px;

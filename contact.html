@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - LottoMaster</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">LottoMaster</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Contact Us</h1>
+        <p>Have a question about our random number algorithm or a business inquiry? Fill out the form below and our team will get back to you within 48 hours.</p>
+        
+        <div class="contact-section" style="border:none; margin:0; padding:0;">
+            <form id="contact-form">
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Your Professional Email" required data-fs-field>
+                </div>
+                <div class="form-group">
+                    <textarea name="message" placeholder="Detailed Inquiry" required data-fs-field style="height:200px;"></textarea>
+                </div>
+                <button type="submit" id="submit-btn" data-fs-submit-btn>Submit Inquiry</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2026 LottoMaster. All rights reserved.</p>
+            <ul class="footer-links">
+                <li><a href="privacy.html">Privacy Policy</a></li>
+                <li><a href="terms.html">Terms of Service</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script>
+      window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+      formspree('initForm', { formElement: '#contact-form', formId: 'xzdyvbbo' });
+    </script>
+    <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
+</body>
+</html>
