@@ -305,6 +305,19 @@ class FortuneManager {
         const birthLabel = lang === 'ko'
             ? `${year}년 ${month}월 ${day}일 ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
             : `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth() + 1;
+        const currentDay = now.getDate();
+        const yearlyFlow = stems[mod(currentYear - 4, 10)];
+        const yearlyBranch = branches[mod(currentYear - 4, 12)];
+        const monthFlow = stems[mod(currentYear * 12 + currentMonth + 3, 10)];
+        const monthBranchNow = branches[mod(currentMonth + 1, 12)];
+        const todayIndex = Math.floor(new Date(currentYear, currentMonth - 1, currentDay).getTime() / 86400000);
+        const todayFlow = stems[mod(todayIndex + 4, 10)];
+        const todayBranchNow = branches[mod(todayIndex + 2, 12)];
+        const strengthWord = scores[mainElement] >= 4 ? (lang === 'ko' ? '강한' : 'strong') : (lang === 'ko' ? '균형형' : 'balanced');
+        const cautionElement = weakElement;
 
         if (lang === 'ko') {
             return {
@@ -316,6 +329,11 @@ class FortuneManager {
                         id: 'saju',
                         title: '사주 원국',
                         summary: `${formatPillar(pillars[0])}·${formatPillar(pillars[1])}·${formatPillar(pillars[2])}·${formatPillar(pillars[3])}의 흐름으로 봅니다.`,
+                        highlights: [
+                            `중심 기운: ${elementNames[mainElement]}`,
+                            `보조 기운: ${elementNames[supportElement]}`,
+                            `보완 기운: ${elementNames[weakElement]}`
+                        ],
                         paragraphs: [
                             `입력한 출생 정보는 ${birthLabel}이며, 간이 만세력 기준으로 년주는 ${formatPillar(pillars[0])}, 월주는 ${formatPillar(pillars[1])}, 일주는 ${formatPillar(pillars[2])}, 시주는 ${formatPillar(pillars[3])}로 해석됩니다. 년주는 바깥 환경과 성장 배경, 월주는 사회적 역할과 생활 리듬, 일주는 나의 중심 기질, 시주는 후반부의 관심사와 내면의 방향을 보여줍니다.`,
                             `이 사주는 ${elementNames[mainElement]} 기운이 가장 강하게 드러나고, ${elementNames[supportElement]}이 보조 축을 이룹니다. 강한 기운은 장점이 가장 빨리 발현되는 통로이지만 과하면 고집, 조급함, 피로감으로 나타날 수 있습니다. 반대로 ${elementNames[weakElement]} 기운은 의식적으로 보완할 때 전체 균형이 좋아지는 지점입니다.`,
@@ -323,9 +341,138 @@ class FortuneManager {
                         ]
                     },
                     {
+                        id: 'yearly',
+                        title: `${currentYear}년 올해의 사주`,
+                        summary: `${currentYear}년은 ${yearlyFlow.ko}${yearlyBranch.ko} 흐름으로, 큰 방향을 정하고 생활 구조를 다시 잡는 운입니다.`,
+                        highlights: [
+                            `올해 기운: ${elementNames[yearlyFlow.element]}`,
+                            `나의 중심: ${elementNames[dayStem.element]}`,
+                            seed % 2 === 0 ? '키워드: 정리와 축적' : '키워드: 확장과 선택'
+                        ],
+                        paragraphs: [
+                            `${currentYear}년은 당신에게 한 번에 모든 것을 뒤집는 해라기보다, 이미 쌓아온 것 중 쓸모 있는 것과 버려야 할 것을 구분하는 해입니다. 특히 ${elementNames[yearlyFlow.element]}의 흐름이 들어오면서 생활 패턴, 인간관계, 일의 우선순위를 새로 세우게 됩니다.`,
+                            `올해의 핵심은 "무엇을 더 할 것인가"보다 "무엇을 반복 가능한 시스템으로 만들 것인가"입니다. 사주 원국에서 ${elementNames[mainElement]}이 강하게 작동하므로 마음이 꽂힌 일에는 집중력이 좋지만, 모든 일을 동시에 끌고 가면 운이 분산됩니다. 올해는 목표를 세 개 이하로 줄였을 때 성과가 뚜렷해집니다.`,
+                            `상반기에는 기반 정비와 관계 조율, 하반기에는 결과물 공개와 수익화 흐름이 강합니다. 특히 오래 미뤄둔 공부, 자격, 포트폴리오, 사업 정리, 생활 습관 개선은 올해 안에 형태를 만들수록 내년 운을 받아낼 그릇이 커집니다.`
+                        ],
+                        checklist: [
+                            '올해 잘 맞는 선택: 장기 계획, 자격/학습, 고정비 정리, 업무 시스템화',
+                            '올해 피해야 할 선택: 감정적 퇴사/이별/투자, 검증 없는 동업, 무리한 약속',
+                            `올해 보완 행동: ${elementNames[cautionElement]} 기운을 살리는 기록, 휴식, 정보 검증`
+                        ]
+                    },
+                    {
+                        id: 'monthly',
+                        title: `${currentMonth}월 한달 운세`,
+                        summary: `이번 달은 ${monthFlow.ko}${monthBranchNow.ko} 기운이 들어와 실행보다 조율의 질이 중요합니다.`,
+                        highlights: [
+                            `이번 달 운: ${elementNames[monthFlow.element]}`,
+                            currentMonth % 2 === 0 ? '흐름: 관계 정리' : '흐름: 기회 탐색',
+                            `주의: ${elementNames[weakElement]} 부족`
+                        ],
+                        paragraphs: [
+                            `이번 달은 눈에 보이는 성과보다 "다음 단계로 넘어가기 전에 빈틈을 메우는 운"이 강합니다. 해야 할 일이 많아 보여도 실제로는 우선순위를 조정하면 부담이 크게 줄어듭니다. 일정표, 지출표, 연락해야 할 사람 목록을 정리하는 것만으로도 운의 흐름이 안정됩니다.`,
+                            `일에서는 기존 업무의 문제점을 개선하거나, 이미 진행 중인 프로젝트를 더 설득력 있게 다듬는 데 유리합니다. 새로운 시작도 가능하지만 즉흥적으로 벌이기보다 작은 테스트를 먼저 해보는 편이 좋습니다. 특히 문서, 계약, 일정, 돈의 흐름은 숫자로 남겨야 합니다.`,
+                            `관계에서는 서운함이 누적된 사람과의 대화가 필요할 수 있습니다. 단, 이번 달에는 감정의 옳고 그름을 따지기보다 앞으로 어떤 방식으로 지낼지 합의하는 쪽이 훨씬 유리합니다.`
+                        ],
+                        checklist: [
+                            '이번 달 행운 포인트: 오전 시간 활용, 책상/파일 정리, 약속 재확인',
+                            '이번 달 조심할 점: 급한 구매, 말로만 정한 약속, 과한 야근',
+                            '월말 전 점검: 고정비, 건강 루틴, 중요한 연락 3개'
+                        ]
+                    },
+                    {
+                        id: 'daily',
+                        title: '오늘 하루 운세',
+                        summary: `오늘은 ${todayFlow.ko}${todayBranchNow.ko} 기운으로 작고 정확한 선택이 운을 살립니다.`,
+                        highlights: [
+                            `오늘 기운: ${elementNames[todayFlow.element]}`,
+                            seed % 3 === 0 ? '좋은 시간: 오전' : seed % 3 === 1 ? '좋은 시간: 오후' : '좋은 시간: 저녁',
+                            '핵심: 속도보다 정확도'
+                        ],
+                        paragraphs: [
+                            `오늘은 큰 결정을 밀어붙이기보다, 이미 정해진 일을 정확하게 처리할수록 길합니다. 특히 연락, 결제, 예약, 제출, 회의처럼 작은 실수가 커질 수 있는 영역을 먼저 확인하세요. 운이 좋은 날일수록 기본을 놓치지 않는 태도가 성과를 크게 만듭니다.`,
+                            `몸의 리듬은 오전에 비교적 맑고, 오후에는 주변 요청이 늘어날 수 있습니다. 누군가의 부탁을 모두 받아주기보다 지금 처리할 일과 나중에 답할 일을 분리하면 피로가 줄어듭니다. 오늘은 "바로 답장"보다 "정확한 답장"이 더 좋은 운을 부릅니다.`,
+                            `오늘의 행운 행동은 짧은 정리입니다. 지갑, 휴대폰 사진, 메모장, 책상 위 물건 중 하나만 비워도 머릿속이 정돈되고 판단이 빨라집니다.`
+                        ],
+                        checklist: [
+                            '오늘 하면 좋은 일: 밀린 답장, 일정 확인, 짧은 산책',
+                            '오늘 미루면 좋은 일: 충동구매, 감정적 통보, 무리한 약속',
+                            `오늘의 보완 기운: ${elementNames[weakElement]}`
+                        ]
+                    },
+                    {
+                        id: 'loveToday',
+                        title: '오늘의 연애운',
+                        summary: seed % 2 === 0 ? '말보다 태도가 더 크게 전달되는 날입니다.' : '가벼운 대화에서 호감의 실마리가 생기는 날입니다.',
+                        highlights: [
+                            seed % 2 === 0 ? '연애 키워드: 배려' : '연애 키워드: 표현',
+                            '좋은 방식: 짧고 따뜻하게',
+                            '주의: 떠보기 금지'
+                        ],
+                        paragraphs: [
+                            seed % 2 === 0
+                                ? '오늘은 거창한 고백이나 긴 설명보다, 상대가 신경 쓰고 있던 작은 부분을 알아차리는 태도가 더 강하게 작용합니다. 연인이 있다면 상대의 피로를 덜어주는 말 한마디가 관계 온도를 올립니다.'
+                                : '오늘은 가볍게 안부를 묻거나 취향을 공유하는 대화에서 호감이 열립니다. 싱글이라면 너무 완벽한 타이밍을 기다리기보다 부담 없는 메시지 하나가 흐름을 바꿀 수 있습니다.',
+                            `당신의 사주는 관계에서 신뢰가 쌓일수록 깊어지는 구조입니다. 그래서 오늘의 연애운도 단번에 불꽃이 튀는 방식보다, 상대가 "이 사람은 말과 행동이 맞다"고 느낄 때 좋아집니다.`,
+                            `주의할 점은 상대의 반응을 시험하려는 말입니다. 장난처럼 던진 말도 오늘은 의외로 깊게 받아들여질 수 있으니, 원하는 것이 있으면 돌려 말하지 말고 부드럽게 직접 표현하는 편이 좋습니다.`
+                        ],
+                        checklist: [
+                            '커플: 고마웠던 점 하나를 구체적으로 말하기',
+                            '싱글: 취향이나 근황을 묻는 짧은 연락',
+                            '금지: 질투 유발, 읽씹 테스트, 과거 이야기 반복'
+                        ]
+                    },
+                    {
+                        id: 'loveMonth',
+                        title: '이번 달 연애운',
+                        summary: '관계의 속도보다 안정감과 반복되는 배려가 중요한 달입니다.',
+                        highlights: [
+                            currentMonth % 2 === 0 ? '관계 정돈' : '새 인연 탐색',
+                            '매력 포인트: 진정성',
+                            '주의: 과해석'
+                        ],
+                        paragraphs: [
+                            `이번 달 연애운은 빠른 진전보다 신뢰 확인에 초점이 있습니다. 상대가 어떤 말을 하는지보다 약속을 어떻게 지키는지, 바쁠 때 어떤 태도를 보이는지를 보면 관계의 방향이 보입니다.`,
+                            `커플이라면 생활 리듬을 맞추는 대화가 필요합니다. 데이트 횟수, 연락 빈도, 돈 쓰는 방식처럼 현실적인 부분을 편하게 이야기하면 오히려 관계가 안정됩니다. 싱글이라면 지인 모임, 취미 활동, 공부 모임처럼 반복해서 만나는 자리에서 인연운이 열립니다.`,
+                            `이번 달에는 감정의 기복을 상대의 문제로만 돌리지 않는 것이 중요합니다. 내 컨디션이 무너지면 관계 판단도 흔들리므로, 잠과 식사 리듬을 먼저 챙길수록 연애운도 함께 좋아집니다.`
+                        ],
+                        checklist: [
+                            '이번 달 좋은 만남: 차분하고 약속을 지키는 사람',
+                            '피해야 할 흐름: 빠른 확신 요구, 비교, SNS 과몰입',
+                            '관계운 상승 행동: 취향 공유, 산책 데이트, 솔직한 일정 공유'
+                        ]
+                    },
+                    {
+                        id: 'moneyMonth',
+                        title: '이번 달 금전운',
+                        summary: seed % 2 === 0 ? '새로 벌기보다 새는 돈을 막으면 좋아지는 달입니다.' : '작은 부수입과 제안이 들어올 수 있는 달입니다.',
+                        highlights: [
+                            seed % 2 === 0 ? '재물 흐름: 방어' : '재물 흐름: 기회',
+                            '핵심: 숫자 확인',
+                            '주의: 감정 소비'
+                        ],
+                        paragraphs: [
+                            seed % 2 === 0
+                                ? '이번 달은 공격적으로 돈을 불리기보다 지출 구조를 다듬는 것이 우선입니다. 구독, 보험, 통신비, 식비처럼 반복 지출을 점검하면 예상보다 큰 여유가 생깁니다.'
+                                : '이번 달은 작은 제안, 부업, 중고거래, 프로젝트성 수익처럼 예상 밖의 돈 흐름이 생길 수 있습니다. 다만 기회가 들어올수록 조건 확인이 중요합니다.',
+                            `사주상 ${elementNames[weakElement]}이 약한 부분은 금전 판단에서 빈틈이 되기 쉽습니다. 특히 "지금 아니면 안 된다"는 식의 제안은 하루 이상 시간을 두고 검토하세요. 좋은 기회는 검토 시간을 줘도 사라지지 않습니다.`,
+                            `금전운을 올리는 실천은 수입보다 기록입니다. 이번 달에는 하루 지출을 세 줄만 기록해도 소비 패턴이 드러나고, 다음 달 운을 받을 기반이 생깁니다.`
+                        ],
+                        checklist: [
+                            '좋은 선택: 자동이체 정리, 계약서 확인, 목적별 통장 분리',
+                            '주의 선택: 즉흥 투자, 체면 지출, 남의 말만 믿는 구매',
+                            '행운 습관: 결제 전 10분 멈춤'
+                        ]
+                    },
+                    {
                         id: 'personality',
                         title: '성향과 강점',
                         summary: `${elementTone[mainElement]}이 성격의 중심축입니다.`,
+                        highlights: [
+                            `${strengthWord} ${elementNames[mainElement]} 타입`,
+                            `일간: ${dayStem.ko}`,
+                            `보완: ${elementNames[weakElement]}`
+                        ],
                         paragraphs: [
                             `${elementNames[mainElement]}이 강한 사람은 ${elementTone[mainElement]}이 뚜렷합니다. 첫인상보다 시간이 지날수록 실력이 드러나는 편이며, 본인이 책임진 영역에서는 쉽게 손을 놓지 않습니다. 그래서 단기적인 칭찬보다 장기적으로 신뢰가 쌓이는 환경에서 더 큰 힘을 발휘합니다.`,
                             `${elementNames[supportElement]}이 보조하기 때문에 생각만 하고 멈추기보다 실제 행동으로 옮기는 힘도 함께 있습니다. 다만 결정이 빨라질수록 감정의 잔여물을 놓치기 쉬우므로, 중요한 대화에서는 결론보다 과정 설명을 먼저 해주는 것이 좋습니다.`,
@@ -336,6 +483,11 @@ class FortuneManager {
                         id: 'career',
                         title: '일과 재능',
                         summary: '성과가 나는 방식과 피해야 할 업무 리듬을 봅니다.',
+                        highlights: [
+                            '강점: 구조화',
+                            '성과 방식: 반복 개선',
+                            '주의: 과책임'
+                        ],
                         paragraphs: [
                             `이 사주는 혼자 몰입하는 시간과 사람 사이에서 조율하는 시간이 모두 필요합니다. 월주의 ${formatPillar(pillars[1])} 흐름은 사회적 역할에서 책임감이 커지는 구조를 보여주며, 맡은 일을 체계화하거나 흩어진 문제를 정리할 때 능력이 잘 드러납니다.`,
                             `잘 맞는 업무 방식은 기준을 세우고, 우선순위를 정하고, 결과물을 눈에 보이게 만드는 일입니다. 기획, 운영, 분석, 교육, 상담, 콘텐츠, 관리 업무처럼 경험이 쌓일수록 깊이가 생기는 분야에서 안정적인 성취가 가능합니다.`,
@@ -343,9 +495,94 @@ class FortuneManager {
                         ]
                     },
                     {
+                        id: 'careerYear',
+                        title: '올해의 일·커리어운',
+                        summary: '올해는 실력을 드러내기보다 실력이 드러날 구조를 만드는 운입니다.',
+                        highlights: [
+                            '좋은 전략: 포트폴리오화',
+                            '좋은 관계: 실무형 조력자',
+                            '주의: 무리한 확장'
+                        ],
+                        paragraphs: [
+                            `올해 커리어운은 갑자기 직함이 바뀌는 운보다, 주변에서 당신을 어떤 역할로 인식하는지가 바뀌는 운입니다. 잘하는 일을 반복해서 보여주고, 결과물을 문서나 사례로 남길수록 기회가 늘어납니다.`,
+                            `상반기에는 기반을 다지고, 하반기에는 사람 앞에 내놓는 흐름이 좋습니다. 이직, 승진, 프로젝트 확장, 창업 준비가 있다면 감정적 결정보다 자료 정리와 비교표 작성이 먼저입니다.`,
+                            `사주 원국의 ${elementNames[mainElement]} 성향 때문에 한 번 책임을 맡으면 깊게 파고드는 장점이 있습니다. 다만 올해는 완벽주의보다 공개 후 개선하는 방식이 더 유리합니다.`
+                        ],
+                        checklist: [
+                            '올해 커리어 과제: 대표 성과 3개 정리',
+                            '좋은 협업: 역할과 마감이 명확한 팀',
+                            '피할 흐름: 책임만 늘고 권한은 없는 제안'
+                        ]
+                    },
+                    {
+                        id: 'health',
+                        title: '건강·컨디션운',
+                        summary: '몸의 신호를 늦게 알아차리기 쉬워 루틴 관리가 중요합니다.',
+                        highlights: [
+                            '관리 포인트: 수면',
+                            '주의 포인트: 누적 피로',
+                            `보완 기운: ${elementNames[weakElement]}`
+                        ],
+                        paragraphs: [
+                            `이 사주는 정신적으로 버티는 힘이 있는 편이라 피곤해도 계속 밀고 가는 경향이 있습니다. 문제는 몸이 보내는 신호를 늦게 알아차릴 수 있다는 점입니다. 피로가 쌓이면 판단이 예민해지고, 관계나 돈 문제도 실제보다 크게 느껴질 수 있습니다.`,
+                            `이번 달 컨디션 관리는 거창한 운동보다 반복 가능한 기본 루틴이 좋습니다. 같은 시간에 자고 일어나기, 물 마시기, 짧은 산책, 스마트폰을 내려놓는 시간을 만드는 것이 운의 흐름에도 도움이 됩니다.`,
+                            `특히 ${elementNames[weakElement]} 기운을 보완하는 활동이 필요합니다. 부족한 기운은 사주에서 약점이라기보다 균형을 회복하는 통로입니다. 몸이 편해지면 올해의 기회도 더 안정적으로 받아낼 수 있습니다.`
+                        ],
+                        checklist: [
+                            '이번 주 실천: 잠드는 시간 30분 앞당기기',
+                            '주의: 피곤할 때 큰돈 결정 금지',
+                            '회복 행동: 정리, 가벼운 스트레칭, 따뜻한 식사'
+                        ]
+                    },
+                    {
+                        id: 'compatibility',
+                        title: '궁합·잘 맞는 사람',
+                        summary: '나를 재촉하기보다 리듬을 존중하는 사람과 오래 갑니다.',
+                        highlights: [
+                            `잘 맞는 기운: ${elementNames[supportElement]}`,
+                            '관계 핵심: 신뢰',
+                            '주의: 말보다 행동'
+                        ],
+                        paragraphs: [
+                            `당신에게 잘 맞는 사람은 감정 표현만 화려한 사람보다 생활에서 신뢰를 보여주는 사람입니다. 약속을 지키고, 바쁠 때도 최소한의 설명을 해주며, 관계를 경쟁처럼 만들지 않는 사람이 좋습니다.`,
+                            `${elementNames[supportElement]} 기운이 있는 사람은 당신의 장점을 자연스럽게 살려줍니다. 함께 있을 때 생각이 정리되고, 무리하지 않아도 대화가 이어지는 느낌이 있다면 좋은 궁합으로 볼 수 있습니다.`,
+                            `반대로 매번 급하게 확답을 요구하거나, 불안을 자극해 관계를 끌고 가는 사람과는 피로가 커집니다. 당신은 관계가 안정될수록 매력이 깊어지는 타입이므로, 초반의 강렬함보다 장기적인 편안함을 기준으로 보는 것이 좋습니다.`
+                        ],
+                        checklist: [
+                            '좋은 신호: 말과 행동이 일치함',
+                            '주의 신호: 감정 기복으로 관계를 조종함',
+                            '궁합 질문: 이 사람과 있으면 내 생활이 좋아지는가'
+                        ]
+                    },
+                    {
+                        id: 'lucky',
+                        title: '행운 포인트와 주의일',
+                        summary: '행운은 큰 사건보다 반복되는 작은 선택에서 강해집니다.',
+                        highlights: [
+                            `행운 색감: ${mainElement === 'wood' ? '초록' : mainElement === 'fire' ? '붉은색' : mainElement === 'earth' ? '노란색' : mainElement === 'metal' ? '흰색' : '검정/남색'}`,
+                            `좋은 방향: ${seed % 4 === 0 ? '동쪽' : seed % 4 === 1 ? '남쪽' : seed % 4 === 2 ? '서쪽' : '북쪽'}`,
+                            `주의일: 매월 ${((day + 7) % 28) + 1}일 전후`
+                        ],
+                        paragraphs: [
+                            `행운 포인트는 당신의 강한 기운을 더 강하게 만드는 것보다 부족한 기운을 부드럽게 보완하는 데 있습니다. 그래서 행운 색상이나 방향도 절대적인 규칙이라기보다, 마음가짐을 바꾸는 장치로 활용하는 것이 좋습니다.`,
+                            `매월 ${((day + 7) % 28) + 1}일 전후에는 피로와 감정 반응이 커질 수 있으니 큰 결정보다 점검에 쓰세요. 반대로 매월 ${((day + 15) % 28) + 1}일 전후에는 정리한 것을 실행으로 옮기기 좋습니다.`,
+                            `중요한 날에는 오전에 가장 어려운 일을 하나 처리하고, 오후에는 사람과 조율하는 일을 배치하면 흐름이 좋습니다. 운은 일정표를 어떻게 짜느냐에 따라 체감이 크게 달라집니다.`
+                        ],
+                        checklist: [
+                            '행운 행동: 아침 정리 10분',
+                            '행운 물건: 자주 쓰는 도구 하나를 깨끗하게 관리',
+                            '주의 행동: 피곤한 상태의 즉흥 약속'
+                        ]
+                    },
+                    {
                         id: 'wealth',
                         title: '금전운',
                         summary: seed % 2 === 0 ? '축적형 재물운이 강합니다.' : '변동형 수익 기회가 들어옵니다.',
+                        highlights: [
+                            seed % 2 === 0 ? '타입: 축적형' : '타입: 기회형',
+                            '핵심: 기록',
+                            '주의: 검증 없는 투자'
+                        ],
                         paragraphs: [
                             seed % 2 === 0
                                 ? '금전 흐름은 한 번에 크게 들어오기보다 꾸준히 쌓이는 축적형에 가깝습니다. 고정 수입, 반복 매출, 장기 저축, 안정적인 투자 원칙이 잘 맞고, 빠른 수익을 좇을수록 판단 피로가 커질 수 있습니다.'
@@ -358,6 +595,11 @@ class FortuneManager {
                         id: 'romance',
                         title: '연애와 인간관계',
                         summary: '신뢰가 쌓일수록 깊어지는 관계운입니다.',
+                        highlights: [
+                            '관계 타입: 신뢰형',
+                            '매력: 책임감',
+                            '주의: 혼자 결론내기'
+                        ],
                         paragraphs: [
                             `관계에서는 가볍게 시작해도 마음이 열리면 오래 책임지려는 성향이 강합니다. 상대가 내 진심을 알아주지 않는다고 느끼면 말수가 줄거나 혼자 정리해버릴 수 있으므로, 서운함을 결론처럼 말하기보다 현재 감정과 원하는 행동을 구체적으로 표현하는 것이 좋습니다.`,
                             `잘 맞는 사람은 속도를 존중하고 약속을 가볍게 여기지 않는 사람입니다. 화려한 이벤트보다 일상의 안정감, 반복되는 배려, 생활 습관의 조화가 관계 만족도를 크게 좌우합니다.`,
@@ -503,7 +745,17 @@ class FortuneManager {
         return `
             <h3>${category.title}</h3>
             <p class="fortune-summary">${category.summary}</p>
+            ${category.highlights ? `
+                <div class="fortune-highlights">
+                    ${category.highlights.map(item => `<span>${item}</span>`).join('')}
+                </div>
+            ` : ''}
             ${category.paragraphs.map(paragraph => `<p>${paragraph}</p>`).join('')}
+            ${category.checklist ? `
+                <div class="fortune-checklist">
+                    ${category.checklist.map(item => `<div>${item}</div>`).join('')}
+                </div>
+            ` : ''}
         `;
     }
 }
@@ -528,30 +780,50 @@ class PsycheTestManager {
         if (testType === 'ocean') {
             this.content.innerHTML = `
                 <h3>${lang === 'ko' ? '바다의 길' : 'The Ocean Path'}</h3>
-                <p>${lang === 'ko' ? '당신은 광활한 바다 앞에 서 있습니다. 어떤 길을 따라 걷고 싶나요?' : 'You are standing before a vast ocean. Which path do you choose?'}</p>
+                <p>${lang === 'ko' ? '넓은 바다 앞에 섰을 때 가장 마음이 가는 장면을 고르세요. 선택은 현재의 일 처리 방식과 관계에서 안정감을 얻는 방식을 보여줍니다.' : 'Choose the ocean scene you feel drawn to. The choice reflects your current work rhythm and emotional safety style.'}</p>
                 <div class="choice-grid">
                     <div class="choice-item" onclick="psycheTest.showResult('ocean', 1)">
-                        <div class="choice-img" style="background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%);"></div>
-                        <p>${lang === 'ko' ? '잔잔하고 고운 모래사장' : 'A calm, sandy beach'}</p>
+                        <div class="choice-img picture-scene ocean-calm">
+                            <span class="sun"></span><span class="water"></span><span class="shore"></span><span class="path-line"></span>
+                        </div>
+                        <p>${lang === 'ko' ? '햇빛이 비치는 잔잔한 해변' : 'A calm beach under warm light'}</p>
                     </div>
                     <div class="choice-item" onclick="psycheTest.showResult('ocean', 2)">
-                        <div class="choice-img" style="background: linear-gradient(to top, #30cfd0 0%, #330867 100%);"></div>
-                        <p>${lang === 'ko' ? '웅장한 절벽 위 산책로' : 'A grand cliffside trail'}</p>
+                        <div class="choice-img picture-scene ocean-cliff">
+                            <span class="moon"></span><span class="water"></span><span class="cliff"></span><span class="path-line"></span>
+                        </div>
+                        <p>${lang === 'ko' ? '절벽 위 바람 부는 산책로' : 'A windy cliffside trail'}</p>
+                    </div>
+                    <div class="choice-item" onclick="psycheTest.showResult('ocean', 3)">
+                        <div class="choice-img picture-scene ocean-harbor">
+                            <span class="sun"></span><span class="water"></span><span class="boat"></span><span class="dock"></span>
+                        </div>
+                        <p>${lang === 'ko' ? '작은 배가 묶인 조용한 항구' : 'A quiet harbor with a small boat'}</p>
                     </div>
                 </div>
             `;
         } else {
             this.content.innerHTML = `
                 <h3>${lang === 'ko' ? '숲의 선택' : 'Forest Selection'}</h3>
-                <p>${lang === 'ko' ? '깊은 숲속으로 들어왔습니다. 무엇이 가장 먼저 눈에 띄나요?' : 'You enter a deep forest. What is the first thing you notice?'}</p>
+                <p>${lang === 'ko' ? '숲으로 들어갔을 때 가장 먼저 머물고 싶은 곳을 고르세요. 선택은 스트레스를 다루는 방식과 내면의 욕구를 보여줍니다.' : 'Choose where you would stop first in the forest. The choice reflects your stress pattern and inner needs.'}</p>
                 <div class="choice-grid">
                     <div class="choice-item" onclick="psycheTest.showResult('forest', 1)">
-                        <div class="choice-img" style="background: #2d5a27;"></div>
+                        <div class="choice-img picture-scene forest-tree">
+                            <span class="canopy"></span><span class="trunk"></span><span class="ground"></span><span class="path-line"></span>
+                        </div>
                         <p>${lang === 'ko' ? '하늘을 찌를 듯한 고목' : 'Towering ancient trees'}</p>
                     </div>
                     <div class="choice-item" onclick="psycheTest.showResult('forest', 2)">
-                        <div class="choice-img" style="background: #a8dadc;"></div>
+                        <div class="choice-img picture-scene forest-pond">
+                            <span class="water"></span><span class="reed"></span><span class="stone"></span><span class="glow"></span>
+                        </div>
                         <p>${lang === 'ko' ? '반짝이는 작은 연못' : 'A sparkling small pond'}</p>
+                    </div>
+                    <div class="choice-item" onclick="psycheTest.showResult('forest', 3)">
+                        <div class="choice-img picture-scene forest-cabin">
+                            <span class="cabin"></span><span class="roof"></span><span class="window"></span><span class="ground"></span>
+                        </div>
+                        <p>${lang === 'ko' ? '불빛이 켜진 작은 오두막' : 'A small cabin with warm light'}</p>
                     </div>
                 </div>
             `;
@@ -561,18 +833,22 @@ class PsycheTestManager {
         const lang = document.documentElement.lang || 'ko';
         const results = {
             ocean: lang === 'ko' ? [
-                "평화와 안정을 중시하는 타입입니다. 갈등이 적고 명확하고 안정적인 커리어 경로를 선호합니다. 주변 사람들과 조화를 이루며 꾸준히 성장하는 것에 큰 가치를 둡니다.",
-                "도전과 성취를 즐기는 모험가 타입입니다. 위험이 따르더라도 큰 보상이 있는 환경에서 능력을 발휘합니다. 남들이 가지 않은 길을 개척하며 자신의 존재감을 증명하고 싶어 합니다."
+                "잔잔한 해변을 고른 당신은 감정의 안전감과 예측 가능한 리듬을 중요하게 여깁니다. 일을 할 때도 갑작스러운 변화보다 계획과 합의가 있을 때 실력이 잘 드러납니다. 관계에서는 다정하지만 쉽게 마음을 열지는 않으며, 상대가 반복적으로 신뢰를 보여줄 때 깊어집니다. 지금 필요한 것은 더 큰 자극이 아니라 회복 가능한 생활 리듬입니다.",
+                "절벽 위 산책로를 고른 당신은 긴장감 속에서도 방향을 찾는 도전형입니다. 남들이 안정만 볼 때 가능성을 보고, 어려운 상황에서 오히려 집중력이 살아납니다. 다만 늘 강해 보여야 한다는 압박 때문에 피로를 숨기기 쉽습니다. 지금은 도전할 일과 쉬어야 할 일을 구분해야 성취가 오래 갑니다.",
+                "조용한 항구를 고른 당신은 사람과 일 사이의 균형을 조율하는 타입입니다. 완전히 혼자 있기보다 믿을 수 있는 소수와 연결되어 있을 때 마음이 안정됩니다. 새로운 기회가 와도 바로 뛰어들기보다 출발 준비가 되었는지 확인하는 편입니다. 지금의 키워드는 정박과 출항 사이의 타이밍입니다."
             ] : [
-                "You value peace and stability. You prefer a clear and stable career path with minimal conflict. You find great value in growing steadily while harmonizing with those around you.",
-                "You are an adventurer who enjoys challenges and achievements. You thrive in environments with high risk and high reward. You want to prove your presence by pioneering paths that others have not taken."
+                "You value emotional safety and a predictable rhythm. Your strengths show when plans and expectations are clear.",
+                "You are challenge-oriented and focused under pressure, but you need to separate ambition from exhaustion.",
+                "You balance independence and connection. Your timing improves when you prepare before departure."
             ],
             forest: lang === 'ko' ? [
-                "지혜롭고 신중하며 신뢰를 주는 타입입니다. 사람들은 당신의 묵직한 존재감과 장기적인 시야에 의지합니다. 어떤 상황에서도 흔들리지 않는 뿌리 깊은 가치관을 가지고 있습니다.",
-                "감수성이 풍부하고 내면 세계가 깊은 타입입니다. 직관력이 뛰어나며 자기 성찰을 중요하게 생각합니다. 눈에 보이는 것 너머의 본질을 꿰뚫어 보는 통찰력을 지녔습니다."
+                "고목을 고른 당신은 책임감과 지속성을 중요하게 여깁니다. 쉽게 흔들리지 않는 기준이 있고, 주변 사람들은 당신의 묵직한 태도에서 안정감을 느낍니다. 다만 오래 버티는 능력이 강한 만큼 도움을 요청하는 시점이 늦어질 수 있습니다. 지금 필요한 것은 더 버티는 힘이 아니라 부담을 나누는 기술입니다.",
+                "연못을 고른 당신은 감수성과 직관이 발달한 타입입니다. 말로 설명되지 않는 분위기나 상대의 감정을 빨리 알아차립니다. 그래서 좋은 환경에서는 창의력이 살아나지만, 복잡한 관계 안에서는 쉽게 지칠 수 있습니다. 지금은 감정을 해석하기 전에 몸의 피로부터 돌보는 것이 중요합니다.",
+                "오두막을 고른 당신은 따뜻한 소속감과 사적인 안정 공간을 필요로 합니다. 겉으로는 괜찮아 보여도 마음속으로는 안전하게 쉴 수 있는 사람과 장소를 찾고 있습니다. 관계에서는 깊고 진실한 대화를 원하며, 일에서는 내 이름이 붙는 결과물을 만들 때 만족감이 큽니다. 지금 필요한 것은 나를 회복시키는 고정된 루틴입니다."
             ] : [
-                "You are wise, cautious, and trustworthy. People rely on your solid presence and long-term vision. You have deep-rooted values that do not waver in any situation.",
-                "You have rich sensibility and a deep inner world. You are highly intuitive and value self-reflection. You possess the insight to see through the essence beyond what is visible."
+                "You value responsibility and endurance, but you need to share burdens earlier.",
+                "You are intuitive and sensitive to atmosphere; protect your energy before overinterpreting emotions.",
+                "You need warmth, privacy, and a place to recover. Meaningful work matters more than noise."
             ]
         };
         this.content.innerHTML = `

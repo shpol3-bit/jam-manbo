@@ -293,6 +293,36 @@ h1 {
     margin: 14px 0;
 }
 
+.fortune-highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0;
+}
+
+.fortune-highlights span {
+    background: var(--bg-color);
+    border: 1px solid var(--shadow);
+    border-radius: 999px;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 7px 12px;
+}
+
+.fortune-checklist {
+    display: grid;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.fortune-checklist div {
+    background: var(--bg-color);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
 .test-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -321,8 +351,10 @@ h1 {
     padding: 40px;
     border-radius: 20px;
     width: 90%;
-    max-width: 500px;
+    max-width: 760px;
     position: relative;
+    max-height: 88vh;
+    overflow-y: auto;
 }
 
 .close-modal {
@@ -331,17 +363,222 @@ h1 {
 
 .choice-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     margin-top: 30px;
 }
 
-.choice-item { cursor: pointer; text-align: center; }
+.choice-item {
+    cursor: pointer;
+    text-align: center;
+    border: 1px solid var(--shadow);
+    border-radius: 12px;
+    padding: 12px;
+    transition: 0.2s;
+}
+
+.choice-item:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-3px);
+}
+
 .choice-img {
-    height: 120px;
+    height: 150px;
     border-radius: 12px;
     margin-bottom: 10px;
     box-shadow: 0 4px 10px var(--shadow);
+    overflow: hidden;
+    position: relative;
+}
+
+.picture-scene {
+    background: linear-gradient(#8fd3ff 0%, #e9f7ff 54%, #f8e0a4 55%, #d6aa62 100%);
+}
+
+.picture-scene span {
+    position: absolute;
+    display: block;
+}
+
+.picture-scene .sun {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    right: 22px;
+    top: 18px;
+    background: #ffd166;
+    box-shadow: 0 0 24px rgba(255, 209, 102, 0.75);
+}
+
+.picture-scene .moon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    right: 24px;
+    top: 18px;
+    background: #f1f5f9;
+    box-shadow: -8px 0 0 #31425f inset;
+}
+
+.picture-scene .water {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 56%;
+    background: repeating-linear-gradient(175deg, #1d8fbd 0 10px, #46bad6 10px 18px);
+}
+
+.picture-scene .shore {
+    left: -10%;
+    right: -10%;
+    bottom: -22px;
+    height: 70px;
+    border-radius: 50% 50% 0 0;
+    background: #e6c279;
+}
+
+.picture-scene .path-line {
+    left: 30%;
+    bottom: 0;
+    width: 36%;
+    height: 78px;
+    background: linear-gradient(105deg, transparent 0 35%, rgba(255,255,255,0.75) 36% 48%, transparent 49% 100%);
+    opacity: 0.75;
+}
+
+.ocean-cliff {
+    background: linear-gradient(#31425f 0%, #657b9a 52%, #244a67 53%, #102f45 100%);
+}
+
+.ocean-cliff .water {
+    background: repeating-linear-gradient(170deg, #113d58 0 12px, #256a83 12px 20px);
+}
+
+.picture-scene .cliff {
+    left: -16px;
+    bottom: 0;
+    width: 50%;
+    height: 86%;
+    clip-path: polygon(0 20%, 75% 35%, 100% 100%, 0 100%);
+    background: #5a5144;
+}
+
+.picture-scene .boat {
+    left: 54%;
+    bottom: 42%;
+    width: 42px;
+    height: 16px;
+    border-radius: 0 0 24px 24px;
+    background: #774936;
+}
+
+.picture-scene .dock {
+    left: 10%;
+    bottom: 28%;
+    width: 56%;
+    height: 12px;
+    background: #7f5539;
+    box-shadow: 0 12px 0 rgba(127, 85, 57, 0.55);
+}
+
+.forest-tree {
+    background: linear-gradient(#bde0fe 0%, #d8f3dc 52%, #8f6f45 53%, #5f4b32 100%);
+}
+
+.picture-scene .canopy {
+    left: 8%;
+    top: 8px;
+    width: 84%;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 35%, #52b788 0 26%, #2d6a4f 27% 100%);
+}
+
+.picture-scene .trunk {
+    left: 46%;
+    top: 64px;
+    width: 24px;
+    height: 84px;
+    background: #6f4e37;
+}
+
+.picture-scene .ground {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 36%;
+    background: #6b8e4e;
+}
+
+.forest-pond {
+    background: linear-gradient(#d8f3dc 0%, #b7e4c7 56%, #52796f 57%, #2f5d62 100%);
+}
+
+.forest-pond .water {
+    left: 14%;
+    right: 14%;
+    bottom: 14px;
+    height: 58px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 45%, #caf0f8 0 15%, #48cae4 16% 52%, #0077b6 53% 100%);
+}
+
+.picture-scene .reed {
+    left: 20%;
+    bottom: 42px;
+    width: 5px;
+    height: 50px;
+    background: #386641;
+    box-shadow: 14px 8px 0 #386641, 104px 4px 0 #386641;
+}
+
+.picture-scene .stone {
+    right: 18%;
+    bottom: 25px;
+    width: 28px;
+    height: 14px;
+    border-radius: 50%;
+    background: #adb5bd;
+}
+
+.picture-scene .glow {
+    left: 50%;
+    top: 35px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff3b0;
+    box-shadow: -32px 18px 0 #fff3b0, 34px 28px 0 #fff3b0, 12px -8px 0 #fff3b0;
+}
+
+.forest-cabin {
+    background: linear-gradient(#9ec5fe 0%, #cfe1b9 56%, #7a9e5c 57%, #4f772d 100%);
+}
+
+.picture-scene .cabin {
+    left: 30%;
+    bottom: 26px;
+    width: 42%;
+    height: 48px;
+    background: #8d5524;
+}
+
+.picture-scene .roof {
+    left: 25%;
+    bottom: 72px;
+    width: 52%;
+    height: 36px;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    background: #5c2e14;
+}
+
+.picture-scene .window {
+    left: 49%;
+    bottom: 44px;
+    width: 20px;
+    height: 18px;
+    background: #ffd166;
+    box-shadow: 0 0 18px rgba(255, 209, 102, 0.75);
 }
 
 .test-result-text {
