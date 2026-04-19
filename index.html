@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InsightMaster | Fortune, Saju & Psychological Insights</title>
-    <meta name="description" content="Discover your destiny with our advanced Saju (Four Pillars) analysis, daily fortune, and scientific psychological tests. Get insights into your love, wealth, and career today.">
-    <meta name="keywords" content="saju analysis, daily fortune, romance luck, wealth luck, psychological test, personality test, lotto generator">
+    <title>인사이트마스터 | 사주, 운세 & 심리 분석</title>
+    <meta name="description" content="만세력 사주 분석, 오늘의 운세, 과학적 심리 테스트로 당신의 운명을 탐험하세요. 연애운, 금전운, 커리어 통찰을 제공합니다.">
+    <meta name="keywords" content="사주풀이, 오늘의 운세, 연애운, 금전운, 심리테스트, 성격 테스트, 로또 번호 생성기">
     
-    <meta property="og:title" content="InsightMaster | Explore Your Destiny">
-    <meta property="og:description" content="Personalized fortune and psychological analysis in one place.">
+    <meta property="og:title" content="인사이트마스터 | 당신의 운명을 확인하세요">
+    <meta property="og:description" content="개인별 맞춤 운세와 심리 분석을 한 곳에서 확인하세요.">
     <meta property="og:url" content="https://www.tstmind.com">
 
     <meta name="google-adsense-account" content="ca-pub-2122051581422074">
@@ -19,12 +19,12 @@
 <body>
     <header>
         <nav class="navbar">
-            <div class="logo">InsightMaster</div>
+            <div class="logo" onclick="showView('home')">InsightMaster</div>
             <ul class="nav-links">
-                <li><a href="#fortune">Fortune</a></li>
-                <li><a href="#psychology">Psyche Test</a></li>
-                <li><a href="#lotto">Lotto</a></li>
-                <li><a href="#academy">Academy</a></li>
+                <li data-i18n="nav-fortune"><a href="javascript:void(0)" onclick="showView('fortune')">운세/사주</a></li>
+                <li data-i18n="nav-psychology"><a href="javascript:void(0)" onclick="showView('psychology')">심리테스트</a></li>
+                <li data-i18n="nav-lotto"><a href="javascript:void(0)" onclick="showView('lotto')">로또</a></li>
+                <li><button id="lang-btn" class="lang-toggle">English</button></li>
             </ul>
         </nav>
     </header>
@@ -34,49 +34,86 @@
             <button id="theme-btn">🌙 Dark Mode</button>
         </div>
 
-        <!-- 1. FORTUNE & SAJU SECTION -->
-        <section id="fortune" class="feature-section">
-            <h1>Daily Fortune & Saju</h1>
-            <p class="subtitle">Enter your birth details to unlock your cosmic blueprint.</p>
+        <!-- 1. HOME PORTAL VIEW -->
+        <div id="view-home" class="view active">
+            <h1 data-i18n="home-title">인사이트마스터</h1>
+            <p class="subtitle" data-i18n="home-subtitle">당신의 삶에 깊은 통찰을 제공하는 운세와 심리 탐험의 공간입니다.</p>
+            
+            <div class="portal-grid">
+                <div class="portal-card" onclick="showView('fortune')">
+                    <div class="test-icon">📜</div>
+                    <h3 data-i18n="nav-fortune">운세/사주</h3>
+                    <p data-i18n="home-fortune-desc">생년월일 기반의 정밀한 사주 분석과 오늘의 운세를 확인하세요.</p>
+                </div>
+                <div class="portal-card" onclick="showView('psychology')">
+                    <div class="test-icon">🧠</div>
+                    <h3 data-i18n="nav-psychology">심리테스트</h3>
+                    <p data-i18n="home-psy-desc">무의식 속 당신의 진정한 모습과 미래를 심리 테스트로 알아보세요.</p>
+                </div>
+                <div class="portal-card" onclick="showView('lotto')">
+                    <div class="test-icon">💎</div>
+                    <h3 data-i18n="nav-lotto">로또</h3>
+                    <p data-i18n="home-lotto-desc">과학적 난수 알고리즘을 활용한 오늘의 행운 번호를 생성합니다.</p>
+                </div>
+            </div>
+
+            <!-- SEO ACADEMY CONTENT (VISIBLE ON HOME) -->
+            <section id="academy" class="info-section">
+                <h2 data-i18n="academy-title">통찰의 과학</h2>
+                <article class="content-rich-article">
+                    <h3 data-i18n="academy-saju-h">사주와 만세력의 이해</h3>
+                    <p data-i18n="academy-saju-p">사주(四柱)는 태어난 연, 월, 일, 시의 네 기둥을 의미하며, 동양 철학에서는 이를 통해 한 사람의 타고난 기운과 흐름을 분석합니다. 오행(목, 화, 토, 금, 수)의 균형을 맞추는 것은 단순히 미래를 점치는 것을 넘어, 자기 자신을 더 깊이 이해하고 조화로운 삶을 사는 지혜를 제공합니다.</p>
+                    
+                    <h3 data-i18n="academy-psy-h">심리 테스트의 가치</h3>
+                    <p data-i18n="academy-psy-p">현대 심리학의 투사 검사(Projective Test)는 모호한 자극에 대한 개인의 선택을 분석하여 무의식적인 가치관과 감정 상태를 파악합니다. 인사이트마스터의 테스트들은 이러한 심리학적 원리를 바탕으로 재미와 자아 성찰의 기회를 동시에 제공합니다.</p>
+                </article>
+            </section>
+        </div>
+
+        <!-- 2. FORTUNE VIEW -->
+        <div id="view-fortune" class="view">
+            <h1 data-i18n="fortune-title">오늘의 사주 & 운세</h1>
+            <p class="subtitle" data-i18n="fortune-subtitle">태어난 정보를 입력하여 당신의 우주적 설계를 확인하세요.</p>
             
             <div class="input-card">
                 <form id="fortune-form">
                     <div class="form-row">
                         <div class="input-group">
-                            <label>Birth Date</label>
+                            <label data-i18n="label-birthdate">생년월일</label>
                             <input type="date" id="birth-date" required>
                         </div>
                         <div class="input-group">
-                            <label>Birth Time</label>
+                            <label data-i18n="label-birthtime">태어난 시간</label>
                             <input type="time" id="birth-time">
                         </div>
                     </div>
-                    <button type="submit" id="check-fortune-btn">Reveal My Destiny</button>
+                    <button type="submit" id="check-fortune-btn" data-i18n="btn-fortune">운명 확인하기</button>
                 </form>
             </div>
 
             <div id="fortune-results" class="results-container hidden">
                 <!-- Dynamic Results Here -->
             </div>
-        </section>
+            <button class="back-btn" onclick="showView('home')" data-i18n="btn-back">뒤로 가기</button>
+        </div>
 
-        <!-- 2. PSYCHOLOGICAL TEST SECTION -->
-        <section id="psychology" class="feature-section">
-            <h2>Psychological Insight Tests</h2>
-            <p>Explore the hidden corners of your mind through our visual and behavioral tests.</p>
+        <!-- 3. PSYCHOLOGY VIEW -->
+        <div id="view-psychology" class="view">
+            <h1 data-i18n="psy-title">심리 통찰 테스트</h1>
+            <p class="subtitle" data-i18n="psy-subtitle">시각적 선택을 통해 마음의 지도를 탐험하세요.</p>
             
             <div class="test-grid">
                 <div class="test-card" id="test-ocean">
                     <div class="test-icon">🌊</div>
-                    <h3>The Ocean Path</h3>
-                    <p>What does your choice of path say about your future career?</p>
-                    <button class="start-test-btn" data-test="ocean">Start Test</button>
+                    <h3 data-i18n="test-ocean-title">바다의 길</h3>
+                    <p data-i18n="test-ocean-desc">당신이 선택한 바닷길은 커리어에 대해 무엇을 말해줄까요?</p>
+                    <button class="start-test-btn" data-test="ocean" data-i18n="btn-start">테스트 시작</button>
                 </div>
                 <div class="test-card" id="test-forest">
                     <div class="test-icon">🌲</div>
-                    <h3>Forest Selection</h3>
-                    <p>Discover your true personality through a walk in the woods.</p>
-                    <button class="start-test-btn" data-test="forest">Start Test</button>
+                    <h3 data-i18n="test-forest-title">숲의 선택</h3>
+                    <p data-i18n="test-forest-desc">숲길을 걷는 상상을 통해 당신의 진정한 성격을 발견하세요.</p>
+                    <button class="start-test-btn" data-test="forest" data-i18n="btn-start">테스트 시작</button>
                 </div>
             </div>
 
@@ -86,65 +123,33 @@
                     <div id="test-content"></div>
                 </div>
             </div>
-        </section>
+            <button class="back-btn" onclick="showView('home')" data-i18n="btn-back" style="margin-top:40px;">뒤로 가기</button>
+        </div>
 
-        <!-- 3. LOTTO SECTION (SECONDARY) -->
-        <section id="lotto" class="feature-section lotto-lite">
-            <h2>Lotto Number Generator</h2>
-            <p>Need extra luck? Generate your scientific random combinations below.</p>
+        <!-- 4. LOTTO VIEW -->
+        <div id="view-lotto" class="view">
+            <h1 data-i18n="lotto-title">로또 행운 번호</h1>
+            <p class="subtitle" data-i18n="lotto-subtitle">추가 행운이 필요하신가요? 난수 생성 알고리즘으로 번호를 뽑아보세요.</p>
             <div id="lotto-balls-container"></div>
-            <button id="generate-btn">Generate Lucky Sets</button>
-        </section>
-
-        <!-- 4. ACADEMY SECTION (SEO CONTENT) -->
-        <section id="academy" class="info-section">
-            <h2>The Science of Insights</h2>
-            <article class="content-rich-article">
-                <h3>Understanding Saju and Manse-ryeok</h3>
-                <p>Saju, also known as the Four Pillars of Destiny, is a traditional Eastern metaphysical system that analyzes a person's life based on their birth year, month, day, and hour. Each pillar represents a different aspect of life, including ancestors, parents, self, and children. By calculating the alignment of the five elements (Wood, Fire, Earth, Metal, Water), we can gain insights into potential life paths and personality traits.</p>
-                
-                <h3>The Value of Psychological Testing</h3>
-                <p>Modern psychology often uses projective tests to understand a person's subconscious. By presenting ambiguous stimuli, like an image of a path or a forest, and asking for a preference, we can tap into the values and fears that guide your decision-making process.</p>
-            </article>
-        </section>
-
-        <section id="responsible" class="info-section safety-box">
-            <h2>Responsible Guidance</h2>
-            <p>Our insights are for entertainment and self-reflection purposes only. We encourage you to make life decisions based on sound judgment and professional advice when necessary.</p>
-        </section>
-
-        <div class="contact-section">
-            <h3>Support & Inquiries</h3>
-            <form id="contact-form">
-                <div class="form-group">
-                    <input type="email" name="email" placeholder="Your Email" required data-fs-field>
-                </div>
-                <div class="form-group">
-                    <textarea name="message" placeholder="Message" required data-fs-field></textarea>
-                </div>
-                <button type="submit" id="submit-btn" data-fs-submit-btn>Send Message</button>
-            </form>
+            <button id="generate-btn" data-i18n="btn-lotto">행운 번호 생성</button>
+            <button class="back-btn" onclick="showView('home')" data-i18n="btn-back" style="margin-top:40px; display:block; margin-left:auto; margin-right:auto;">뒤로 가기</button>
         </div>
 
-        <div class="comments-section">
-            <h3>Community Board</h3>
-            <div id="disqus_thread"></div>
-        </div>
     </main>
 
     <footer>
         <div class="footer-content">
             <div class="footer-brand">
                 <span class="logo">InsightMaster</span>
-                <p>Decoding the universe, one insight at a time.</p>
+                <p data-i18n="footer-tagline">우주의 암호를 풀어 당신의 통찰을 돕습니다.</p>
             </div>
             <ul class="footer-links">
-                <li><a href="privacy.html">Privacy Policy</a></li>
-                <li><a href="terms.html">Terms of Service</a></li>
-                <li><a href="about.html">About Us</a></li>
-                <li><a href="contact.html">Contact Us</a></li>
+                <li><a href="privacy.html" data-i18n="footer-privacy">개인정보처리방침</a></li>
+                <li><a href="terms.html" data-i18n="footer-terms">이용약관</a></li>
+                <li><a href="about.html" data-i18n="footer-about">소개</a></li>
+                <li><a href="contact.html" data-i18 i18n="footer-contact">문의하기</a></li>
             </ul>
-            <p class="copyright">&copy; 2026 InsightMaster. All rights reserved.</p>
+            <p class="copyright">&copy; 2026 InsightMaster. All rights reserved. <span data-i18n="footer-play-responsibly">책임감 있게 즐겨주세요.</span></p>
         </div>
     </footer>
 
@@ -157,10 +162,5 @@
         (d.head || d.body).appendChild(s);
         })();
     </script>
-    <script>
-      window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
-      formspree('initForm', { formElement: '#contact-form', formId: 'xzdyvbbo' });
-    </script>
-    <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
 </body>
 </html>

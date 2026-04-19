@@ -1,64 +1,115 @@
-class LottoBall extends HTMLElement {
+// Multi-language Support (i18n)
+const translations = {
+    ko: {
+        "nav-fortune": "운세/사주",
+        "nav-psychology": "심리테스트",
+        "nav-lotto": "로또",
+        "home-title": "인사이트마스터",
+        "home-subtitle": "당신의 삶에 깊은 통찰을 제공하는 운세와 심리 탐험의 공간입니다.",
+        "home-fortune-desc": "생년월일 기반의 정밀한 사주 분석과 오늘의 운세를 확인하세요.",
+        "home-psy-desc": "무의식 속 당신의 진정한 모습과 미래를 심리 테스트로 알아보세요.",
+        "home-lotto-desc": "과학적 난수 알고리즘을 활용한 오늘의 행운 번호를 생성합니다.",
+        "fortune-title": "오늘의 사주 & 운세",
+        "fortune-subtitle": "태어난 정보를 입력하여 당신의 우주적 설계를 확인하세요.",
+        "label-birthdate": "생년월일",
+        "label-birthtime": "태어난 시간",
+        "btn-fortune": "운명 확인하기",
+        "btn-back": "뒤로 가기",
+        "psy-title": "심리 통찰 테스트",
+        "psy-subtitle": "시각적 선택을 통해 마음의 지도를 탐험하세요.",
+        "test-ocean-title": "바다의 길",
+        "test-ocean-desc": "당신이 선택한 바닷길은 커리어에 대해 무엇을 말해줄까요?",
+        "test-forest-title": "숲의 선택",
+        "test-forest-desc": "숲길을 걷는 상상을 통해 당신의 진정한 성격을 발견하세요.",
+        "btn-start": "테스트 시작",
+        "lotto-title": "로또 행운 번호",
+        "lotto-subtitle": "추가 행운이 필요하신가요? 난수 생성 알고리즘으로 번호를 뽑아보세요.",
+        "btn-lotto": "행운 번호 생성",
+        "footer-tagline": "우주의 암호를 풀어 당신의 통찰을 돕습니다.",
+        "footer-privacy": "개인정보처리방침",
+        "footer-terms": "이용약관",
+        "footer-about": "소개",
+        "footer-contact": "문의하기",
+        "footer-play-responsibly": "책임감 있게 즐겨주세요.",
+        "academy-title": "통찰의 과학",
+        "academy-saju-h": "사주와 만세력의 이해",
+        "academy-saju-p": "사주(四柱)는 태어난 연, 월, 일, 시의 네 기둥을 의미하며, 동양 철학에서는 이를 통해 한 사람의 타고난 기운과 흐름을 분석합니다. 오행(목, 화, 토, 금, 수)의 균형을 맞추는 것은 단순히 미래를 점치는 것을 넘어, 자기 자신을 더 깊이 이해하고 조화로운 삶을 사는 지혜를 제공합니다.",
+        "academy-psy-h": "심리 테스트의 가치",
+        "academy-psy-p": "현대 심리학의 투사 검사(Projective Test)는 모호한 자극에 대한 개인의 선택을 분석하여 무의식적인 가치관과 감정 상태를 파악합니다. 인사이트마스터의 테스트들은 이러한 심리학적 원리를 바탕으로 재미와 자아 성찰의 기회를 동시에 제공합니다."
+    },
+    en: {
+        "nav-fortune": "Fortune",
+        "nav-psychology": "Psyche Test",
+        "nav-lotto": "Lotto",
+        "home-title": "InsightMaster",
+        "home-subtitle": "Exploring your destiny through cosmic alignment and psychological depth.",
+        "home-fortune-desc": "Get precise Saju analysis and daily fortune based on your birth details.",
+        "home-psy-desc": "Discover your true subconscious self through curated psychological tests.",
+        "home-lotto-desc": "Generate your lucky numbers using our scientific random algorithm.",
+        "fortune-title": "Saju & Daily Fortune",
+        "fortune-subtitle": "Unlock your cosmic blueprint by entering your birth information.",
+        "label-birthdate": "Birth Date",
+        "label-birthtime": "Birth Time",
+        "btn-fortune": "Reveal Destiny",
+        "btn-back": "Go Back",
+        "psy-title": "Psychological Insights",
+        "psy-subtitle": "Navigate your mind's map through visual choices.",
+        "test-ocean-title": "The Ocean Path",
+        "test-ocean-desc": "What does your choice of path say about your career future?",
+        "test-forest-title": "Forest Selection",
+        "test-forest-desc": "Discover your true personality through a journey in the woods.",
+        "btn-start": "Start Test",
+        "lotto-title": "Lotto Lucky Numbers",
+        "lotto-subtitle": "Need extra luck? Generate sets using our scientific algorithm.",
+        "btn-lotto": "Generate Numbers",
+        "footer-tagline": "Decoding the universe for your personal growth.",
+        "footer-privacy": "Privacy Policy",
+        "footer-terms": "Terms of Service",
+        "footer-about": "About Us",
+        "footer-contact": "Contact Us",
+        "footer-play-responsibly": "Play Responsibly.",
+        "academy-title": "Science of Insight",
+        "academy-saju-h": "Understanding Saju",
+        "academy-saju-p": "Saju represents the four pillars of birth: Year, Month, Day, and Hour. In Eastern philosophy, it analyzes a person's life energy and flow. Balancing the Five Elements (Wood, Fire, Earth, Metal, Water) provides wisdom for self-understanding and a balanced life.",
+        "academy-psy-h": "Value of Psyche Tests",
+        "academy-psy-p": "Modern Projective Tests analyze individual choices to ambiguous stimuli to uncover subconscious values. InsightMaster's tests use these psychological principles to offer both fun and opportunities for self-reflection."
+    }
+};
+
+class LanguageManager {
     constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
+        this.currentLang = localStorage.getItem('lang') || 'ko';
+        this.langBtn = document.getElementById('lang-btn');
+        this.init();
     }
 
-    connectedCallback() {
-        this.render();
+    init() {
+        this.updateText();
+        this.langBtn.addEventListener('click', () => {
+            this.currentLang = this.currentLang === 'ko' ? 'en' : 'ko';
+            localStorage.setItem('lang', this.currentLang);
+            this.updateText();
+        });
     }
 
-    static get observedAttributes() {
-        return ['number'];
-    }
-
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (name === 'number' && oldValue !== newValue) {
-            this.render();
-        }
-    }
-
-    getColor(number) {
-        const n = parseInt(number);
-        if (n <= 10) return '#f44336'; // Red
-        if (n <= 20) return '#ff9800'; // Orange
-        if (n <= 30) return '#ffc107'; // Amber
-        if (n <= 40) return '#4caf50'; // Green
-        return '#2196f3'; // Blue
-    }
-
-    render() {
-        const number = this.getAttribute('number');
-        if (!number) return;
-        
-        const color = this.getColor(number);
-
-        this.shadowRoot.innerHTML = `
-            <style>
-                .ball {
-                    width: 50px;
-                    height: 50px;
-                    border-radius: 50%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    font-size: 1.2rem;
-                    font-weight: bold;
-                    color: white;
-                    background: radial-gradient(circle at 15px 15px, ${color}, #333);
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                    transition: transform 0.3s ease;
-                }
-                .ball:hover {
-                    transform: scale(1.1);
-                }
-            </style>
-            <div class="ball">${number}</div>
-        `;
+    updateText() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[this.currentLang][key]) {
+                el.textContent = translations[this.currentLang][key];
+            }
+        });
+        this.langBtn.textContent = this.currentLang === 'ko' ? 'English' : '한국어';
+        document.documentElement.lang = this.currentLang;
     }
 }
 
-customElements.define('lotto-ball', LottoBall);
+// View Switching Logic
+function showView(viewId) {
+    document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+    document.getElementById(`view-${viewId}`).classList.add('active');
+    window.scrollTo(0, 0);
+}
 
 // Fortune & Saju Logic
 class FortuneManager {
@@ -80,65 +131,47 @@ class FortuneManager {
     generateFortune() {
         const birthDate = document.getElementById('birth-date').value;
         if (!birthDate) return;
-
         const results = this.calculate(birthDate);
         this.displayResults(results);
     }
 
     calculate(dateStr) {
-        // Pseudo-Saju Calculation based on Date
         const date = new Date(dateStr);
         const day = date.getDate();
         const month = date.getMonth() + 1;
         const seed = day + month;
 
-        const fortunes = [
-            "Today is a day of growth. New opportunities are blooming like spring flowers.",
-            "Stability is your strength today. Focus on completing pending tasks.",
-            "A surprise encounter might bring unexpected joy. Keep an open heart.",
-            "Financial wisdom is needed. Think twice before a major purchase.",
-            "Energy levels are high! Perfect time to start a new fitness routine or project."
-        ];
-
-        const romance = [
-            "Your charm is peaking. Today is great for a deep conversation.",
-            "Someone from your past might reach out. Reflect before responding.",
-            "This month brings harmony in relationships. Small gestures matter most.",
-            "A passionate year awaits. Your social circle will expand significantly."
-        ];
-
-        const wealth = [
-            "A steady flow of income is expected. Avoid impulsive spending today.",
-            "Unexpected gains might come from a side project this month.",
-            "Long-term investments show positive signs. Be patient.",
-            "Today's luck in finance is moderate. Focus on saving."
+        const lang = document.documentElement.lang || 'ko';
+        const fortunes = lang === 'ko' ? [
+            "성장의 기운이 가득한 날입니다. 새로운 기회가 봄꽃처럼 피어날 것입니다.",
+            "오늘은 안정이 최우선입니다. 미뤄둔 일을 차근차근 마무리하세요.",
+            "뜻밖의 만남이 기쁨을 가져다줄 수 있습니다. 마음을 열어두세요.",
+            "재정적인 지혜가 필요한 시기입니다. 큰 지출 전 한 번 더 생각하세요.",
+            "에너지가 넘치는 하루입니다! 새로운 프로젝트나 운동을 시작하기 좋습니다."
+        ] : [
+            "A day full of growth energy. New opportunities will bloom like spring flowers.",
+            "Stability is your priority today. Finish pending tasks steadily.",
+            "An unexpected encounter may bring joy. Keep your heart open.",
+            "Financial wisdom is needed. Think twice before any major spending.",
+            "Energy is overflowing! It's a great day to start a new project or workout."
         ];
 
         return {
             today: fortunes[seed % fortunes.length],
-            romance: romance[seed % romance.length],
-            wealth: wealth[seed % wealth.length],
-            saju: "Your elemental balance suggests a strong presence of 'Wood' and 'Water', indicating adaptability and creative potential."
+            saju: lang === 'ko' ? "당신의 오행 분석 결과 '목(木)'과 '수(水)'의 기운이 강하게 나타납니다. 이는 유연한 적응력과 창의적인 잠재력을 의미합니다." : "Your elemental analysis shows strong 'Wood' and 'Water' energy, indicating flexibility and creative potential."
         };
     }
 
     displayResults(data) {
+        const lang = document.documentElement.lang || 'ko';
         this.resultsContainer.innerHTML = `
             <div class="fortune-card-grid">
                 <div class="result-card">
-                    <h3>🌟 Today's Overview</h3>
+                    <h3>🌟 ${lang === 'ko' ? '오늘의 총평' : 'Today\'s Overview'}</h3>
                     <p>${data.today}</p>
                 </div>
                 <div class="result-card">
-                    <h3>💖 Romance Luck</h3>
-                    <p>${data.romance}</p>
-                </div>
-                <div class="result-card">
-                    <h3>💰 Wealth Luck</h3>
-                    <p>${data.wealth}</p>
-                </div>
-                <div class="result-card">
-                    <h3>📜 Saju Analysis</h3>
+                    <h3>📜 ${lang === 'ko' ? '사주 분석' : 'Saju Analysis'}</h3>
                     <p>${data.saju}</p>
                 </div>
             </div>
@@ -159,129 +192,120 @@ class PsycheTestManager {
 
     init() {
         document.querySelectorAll('.start-test-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.start(btn.dataset.test);
-            });
+            btn.addEventListener('click', () => this.start(btn.dataset.test));
         });
-
-        if (this.closeBtn) {
-            this.closeBtn.onclick = () => this.modal.classList.add('hidden');
-        }
-
-        window.onclick = (event) => {
-            if (event.target == this.modal) this.modal.classList.add('hidden');
-        };
+        if (this.closeBtn) this.closeBtn.onclick = () => this.modal.classList.add('hidden');
+        window.onclick = (e) => { if (e.target == this.modal) this.modal.classList.add('hidden'); };
     }
 
     start(testType) {
         this.modal.classList.remove('hidden');
+        const lang = document.documentElement.lang || 'ko';
         if (testType === 'ocean') {
-            this.renderOceanTest();
+            this.content.innerHTML = `
+                <h3>${lang === 'ko' ? '바다의 길' : 'The Ocean Path'}</h3>
+                <p>${lang === 'ko' ? '당신은 광활한 바다 앞에 서 있습니다. 어떤 길을 따라 걷고 싶나요?' : 'You are standing before a vast ocean. Which path do you choose?'}</p>
+                <div class="choice-grid">
+                    <div class="choice-item" onclick="psycheTest.showResult('ocean', 1)">
+                        <div class="choice-img" style="background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%);"></div>
+                        <p>${lang === 'ko' ? '잔잔하고 고운 모래사장' : 'A calm, sandy beach'}</p>
+                    </div>
+                    <div class="choice-item" onclick="psycheTest.showResult('ocean', 2)">
+                        <div class="choice-img" style="background: linear-gradient(to top, #30cfd0 0%, #330867 100%);"></div>
+                        <p>${lang === 'ko' ? '웅장한 절벽 위 산책로' : 'A grand cliffside trail'}</p>
+                    </div>
+                </div>
+            `;
         } else {
-            this.renderForestTest();
+            this.content.innerHTML = `
+                <h3>${lang === 'ko' ? '숲의 선택' : 'Forest Selection'}</h3>
+                <p>${lang === 'ko' ? '깊은 숲속으로 들어왔습니다. 무엇이 가장 먼저 눈에 띄나요?' : 'You enter a deep forest. What is the first thing you notice?'}</p>
+                <div class="choice-grid">
+                    <div class="choice-item" onclick="psycheTest.showResult('forest', 1)">
+                        <div class="choice-img" style="background: #2d5a27;"></div>
+                        <p>${lang === 'ko' ? '하늘을 찌를 듯한 고목' : 'Towering ancient trees'}</p>
+                    </div>
+                    <div class="choice-item" onclick="psycheTest.showResult('forest', 2)">
+                        <div class="choice-img" style="background: #a8dadc;"></div>
+                        <p>${lang === 'ko' ? '반짝이는 작은 연못' : 'A sparkling small pond'}</p>
+                    </div>
+                </div>
+            `;
         }
     }
 
-    renderOceanTest() {
-        this.content.innerHTML = `
-            <h3>The Ocean Path</h3>
-            <p>You are standing before a vast ocean. Which path do you choose to walk?</p>
-            <div class="choice-grid">
-                <div class="choice-item" onclick="psycheTest.showResult('ocean', 1)">
-                    <div class="choice-img" style="background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%);"></div>
-                    <p>A calm, sandy beach</p>
-                </div>
-                <div class="choice-item" onclick="psycheTest.showResult('ocean', 2)">
-                    <div class="choice-img" style="background: linear-gradient(to top, #30cfd0 0%, #330867 100%);"></div>
-                    <p>A rocky cliffside trail</p>
-                </div>
-                <div class="choice-item" onclick="psycheTest.showResult('ocean', 3)">
-                    <div class="choice-img" style="background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);"></div>
-                    <p>A wooden pier over the water</p>
-                </div>
-            </div>
-        `;
-    }
-
-    renderForestTest() {
-        this.content.innerHTML = `
-            <h3>Forest Selection</h3>
-            <p>You enter a dense forest. What is the first thing you notice?</p>
-            <div class="choice-grid">
-                <div class="choice-item" onclick="psycheTest.showResult('forest', 1)">
-                    <div class="choice-img" style="background: #2d5a27;"></div>
-                    <p>Towering ancient trees</p>
-                </div>
-                <div class="choice-item" onclick="psycheTest.showResult('forest', 2)">
-                    <div class="choice-img" style="background: #a8dadc;"></div>
-                    <p>A hidden crystal clear pond</p>
-                </div>
-                <div class="choice-item" onclick="psycheTest.showResult('forest', 3)">
-                    <div class="choice-img" style="background: #e9c46a;"></div>
-                    <p>A path covered in golden leaves</p>
-                </div>
-            </div>
-        `;
-    }
-
     showResult(type, choice) {
+        const lang = document.documentElement.lang || 'ko';
         const results = {
-            ocean: [
-                "You value peace and stability. You prefer a career that offers a clear, steady path with minimal conflict.",
-                "You are an adventurer at heart. You thrive in challenging environments and high-risk, high-reward situations.",
-                "You are a dreamer and a connector. You enjoy roles that involve bringing people together or artistic expression."
+            ocean: lang === 'ko' ? [
+                "평화와 안정을 중시하는 타입입니다. 갈등이 적고 명확하고 안정적인 커리어 경로를 선호합니다.",
+                "도전과 성취를 즐기는 모험가 타입입니다. 위험이 따르더라도 큰 보상이 있는 환경에서 능력을 발휘합니다."
+            ] : [
+                "You value peace and stability. You prefer a clear and stable career path with minimal conflict.",
+                "You are an adventurer who enjoys challenges. You thrive in environments with high risk and high reward."
             ],
-            forest: [
-                "You seek wisdom and reliability. People rely on you for your grounded nature and long-term vision.",
-                "You have a deep emotional world. You value introspection and tend to be highly intuitive.",
-                "You are optimistic and change-oriented. You find beauty in transitions and new beginnings."
+            forest: lang === 'ko' ? [
+                "지혜롭고 신중하며 신뢰를 주는 타입입니다. 사람들은 당신의 묵직한 존재감과 장기적인 시야에 의지합니다.",
+                "감수성이 풍부하고 내면 세계가 깊은 타입입니다. 직관력이 뛰어나며 자기 성찰을 중요하게 생각합니다."
+            ] : [
+                "You are wise, cautious, and trustworthy. People rely on your solid presence and long-term vision.",
+                "You have rich sensibility and a deep inner world. You are highly intuitive and value self-reflection."
             ]
         };
 
         this.content.innerHTML = `
-            <h3>Your Result</h3>
+            <h3>${lang === 'ko' ? '당신의 분석 결과' : 'Your Analysis Result'}</h3>
             <p class="test-result-text">${results[type][choice - 1]}</p>
-            <button onclick="psycheTest.modal.classList.add('hidden')" style="margin-top:20px;">Close</button>
+            <button onclick="psycheTest.modal.classList.add('hidden')" style="margin-top:20px;">${lang === 'ko' ? '닫기' : 'Close'}</button>
         `;
     }
 }
 
-// Global Instances
+// Lotto Logic
+class LottoBall extends HTMLElement {
+    constructor() { super(); this.attachShadow({ mode: 'open' }); }
+    connectedCallback() { this.render(); }
+    static get observedAttributes() { return ['number']; }
+    attributeChangedCallback() { this.render(); }
+    render() {
+        const number = this.getAttribute('number');
+        if (!number) return;
+        const color = parseInt(number) <= 10 ? '#f44336' : parseInt(number) <= 20 ? '#ff9800' : parseInt(number) <= 30 ? '#ffc107' : parseInt(number) <= 40 ? '#4caf50' : '#2196f3';
+        this.shadowRoot.innerHTML = `<style>.ball{width:50px;height:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;font-weight:bold;color:white;background:radial-gradient(circle at 15px 15px, ${color}, #333);box-shadow:0 4px 8px rgba(0,0,0,0.2);transition:0.3s;}.ball:hover{transform:scale(1.1);}</style><div class="ball">${number}</div>`;
+    }
+}
+customElements.define('lotto-ball', LottoBall);
+
+// Initialize Managers
+const langManager = new LanguageManager();
 const fortuneManager = new FortuneManager();
 window.psycheTest = new PsycheTestManager();
 
-// Existing Lotto & Theme Logic
-const generateBtn = document.getElementById('generate-btn');
-const lottoBallsContainer = document.getElementById('lotto-balls-container');
-const themeBtn = document.getElementById('theme-btn');
-
-generateBtn.addEventListener('click', () => {
-    lottoBallsContainer.innerHTML = '';
+// Lotto Event
+document.getElementById('generate-btn').addEventListener('click', () => {
+    const container = document.getElementById('lotto-balls-container');
+    container.innerHTML = '';
     const setRow = document.createElement('div');
     setRow.className = 'lotto-row';
     const numbers = new Set();
-    while (numbers.size < 6) {
-        numbers.add(Math.floor(Math.random() * 45) + 1);
-    }
+    while (numbers.size < 6) numbers.add(Math.floor(Math.random() * 45) + 1);
     Array.from(numbers).sort((a, b) => a - b).forEach(number => {
-        const lottoBall = document.createElement('lotto-ball');
-        lottoBall.setAttribute('number', number);
-        setRow.appendChild(lottoBall);
+        const ball = document.createElement('lotto-ball');
+        ball.setAttribute('number', number);
+        setRow.appendChild(ball);
     });
-    lottoBallsContainer.appendChild(setRow);
+    container.appendChild(setRow);
 });
 
+// Theme Logic
+const themeBtn = document.getElementById('theme-btn');
 let currentTheme = localStorage.getItem('theme') || 'light';
 document.documentElement.setAttribute('data-theme', currentTheme);
-updateThemeButton();
+themeBtn.textContent = currentTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
 
 themeBtn.addEventListener('click', () => {
     currentTheme = currentTheme === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', currentTheme);
     localStorage.setItem('theme', currentTheme);
-    updateThemeButton();
-});
-
-function updateThemeButton() {
     themeBtn.textContent = currentTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
-}
+});
