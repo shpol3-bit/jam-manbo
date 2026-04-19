@@ -39,6 +39,7 @@
             <ul class="nav-links">
                 <li><a href="javascript:void(0)" onclick="showView('fortune')" data-i18n="nav-fortune">운세/사주</a></li>
                 <li><a href="javascript:void(0)" onclick="showView('psychology')" data-i18n="nav-psychology">심리테스트</a></li>
+                <li><a href="javascript:void(0)" onclick="showView('mbti')" data-i18n="nav-mbti">MBTI</a></li>
                 <li><a href="javascript:void(0)" onclick="showView('lotto')" data-i18n="nav-lotto">로또</a></li>
                 <li><button id="lang-btn" class="lang-toggle">English</button></li>
             </ul>
@@ -65,6 +66,11 @@
                     <div class="test-icon">🧠</div>
                     <h3 data-i18n="nav-psychology">심리테스트</h3>
                     <p data-i18n="home-psy-desc">무의식 속 당신의 진정한 모습과 미래를 심리 테스트로 알아보세요.</p>
+                </div>
+                <div class="portal-card" onclick="showView('mbti')">
+                    <div class="test-icon">🧭</div>
+                    <h3 data-i18n="nav-mbti">MBTI</h3>
+                    <p data-i18n="home-mbti-desc">16가지 MBTI 유형별 성향, 성격, 연애 스타일과 궁합을 확인하세요.</p>
                 </div>
                 <div class="portal-card" onclick="showView('lotto')">
                     <div class="test-icon">💎</div>
@@ -141,13 +147,6 @@
                 </div>
             </div>
 
-            <section class="mbti-section">
-                <h2>MBTI 유형별 성향·성격·궁합</h2>
-                <p class="mbti-intro">내 유형을 선택하면 기본 성향, 대인관계, 연애 스타일, 잘 맞는 궁합과 조심할 궁합을 자세히 확인할 수 있습니다.</p>
-                <div id="mbti-type-grid" class="mbti-type-grid" aria-label="MBTI 유형 선택"></div>
-                <div id="mbti-detail" class="mbti-detail result-card wide"></div>
-            </section>
-
             <div id="test-modal" class="modal hidden">
                 <div class="modal-content">
                     <span class="close-modal">&times;</span>
@@ -157,7 +156,20 @@
             <button class="back-btn" onclick="showView('home')" data-i18n="btn-back" style="margin-top:40px;">뒤로 가기</button>
         </div>
 
-        <!-- 4. LOTTO VIEW -->
+        <!-- 4. MBTI VIEW -->
+        <div id="view-mbti" class="view">
+            <h1 data-i18n="mbti-title">MBTI 성향 & 궁합</h1>
+            <p class="subtitle" data-i18n="mbti-subtitle">유형별 성격, 관계 방식, 연애 궁합과 성장 포인트를 확인하세요.</p>
+            <section class="mbti-section">
+                <h2>MBTI 유형별 성향·성격·궁합</h2>
+                <p class="mbti-intro">내 유형을 선택하면 기본 성향, 대인관계, 연애 스타일, 잘 맞는 궁합과 조심할 궁합을 자세히 확인할 수 있습니다.</p>
+                <div id="mbti-type-grid" class="mbti-type-grid" aria-label="MBTI 유형 선택"></div>
+                <div id="mbti-detail" class="mbti-detail result-card wide"></div>
+            </section>
+            <button class="back-btn" onclick="showView('home')" data-i18n="btn-back" style="margin-top:40px;">뒤로 가기</button>
+        </div>
+
+        <!-- 5. LOTTO VIEW -->
         <div id="view-lotto" class="view">
             <h1 data-i18n="lotto-title">로또 행운 번호</h1>
             <p class="subtitle" data-i18n="lotto-subtitle">추가 행운이 필요하신가요? 난수 생성 알고리즘으로 번호를 뽑아보세요.</p>

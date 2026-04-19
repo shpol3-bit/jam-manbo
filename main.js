@@ -3,11 +3,13 @@ const translations = {
     ko: {
         "nav-fortune": "운세/사주",
         "nav-psychology": "심리테스트",
+        "nav-mbti": "MBTI",
         "nav-lotto": "로또",
         "home-title": "인사이트마스터",
         "home-subtitle": "당신의 삶에 깊은 통찰을 제공하는 운세와 심리 탐험의 공간입니다.",
         "home-fortune-desc": "생년월일 기반의 정밀한 사주 분석과 오늘의 운세를 확인하세요.",
         "home-psy-desc": "무의식 속 당신의 진정한 모습과 미래를 심리 테스트로 알아보세요.",
+        "home-mbti-desc": "16가지 MBTI 유형별 성향, 성격, 연애 스타일과 궁합을 확인하세요.",
         "home-lotto-desc": "과학적 난수 알고리즘을 활용한 오늘의 행운 번호를 생성합니다.",
         "fortune-title": "오늘의 사주 & 운세",
         "fortune-subtitle": "태어난 정보를 입력하여 당신의 우주적 설계를 확인하세요.",
@@ -17,6 +19,8 @@ const translations = {
         "btn-back": "뒤로 가기",
         "psy-title": "심리 통찰 테스트",
         "psy-subtitle": "시각적 선택을 통해 마음의 지도를 탐험하세요.",
+        "mbti-title": "MBTI 성향 & 궁합",
+        "mbti-subtitle": "유형별 성격, 관계 방식, 연애 궁합과 성장 포인트를 확인하세요.",
         "test-ocean-title": "바다의 길",
         "test-ocean-desc": "당신이 선택한 바닷길은 커리어에 대해 무엇을 말해줄까요?",
         "test-forest-title": "숲의 선택",
@@ -40,11 +44,13 @@ const translations = {
     en: {
         "nav-fortune": "Fortune",
         "nav-psychology": "Psyche Test",
+        "nav-mbti": "MBTI",
         "nav-lotto": "Lotto",
         "home-title": "InsightMaster",
         "home-subtitle": "Exploring your destiny through cosmic alignment and psychological depth.",
         "home-fortune-desc": "Get precise Saju analysis and daily fortune based on your birth details.",
         "home-psy-desc": "Discover your true subconscious self through curated psychological tests.",
+        "home-mbti-desc": "Explore personality traits, relationship styles, romance, and compatibility for all 16 MBTI types.",
         "home-lotto-desc": "Generate your lucky numbers using our scientific random algorithm.",
         "fortune-title": "Saju & Daily Fortune",
         "fortune-subtitle": "Unlock your cosmic blueprint by entering your birth information.",
@@ -54,6 +60,8 @@ const translations = {
         "btn-back": "Go Back",
         "psy-title": "Psychological Insights",
         "psy-subtitle": "Navigate your mind's map through visual choices.",
+        "mbti-title": "MBTI Personality & Compatibility",
+        "mbti-subtitle": "Check each type's traits, relationship style, romance match, and growth points.",
         "test-ocean-title": "The Ocean Path",
         "test-ocean-desc": "What does your choice of path say about your career future?",
         "test-forest-title": "Forest Selection",
@@ -1138,16 +1146,26 @@ const mbtiManager = new MBTIManager();
 document.getElementById('generate-btn').addEventListener('click', () => {
     const container = document.getElementById('lotto-balls-container');
     container.innerHTML = '';
-    const setRow = document.createElement('div');
-    setRow.className = 'lotto-row';
-    const numbers = new Set();
-    while (numbers.size < 6) numbers.add(Math.floor(Math.random() * 45) + 1);
-    Array.from(numbers).sort((a, b) => a - b).forEach(number => {
-        const ball = document.createElement('lotto-ball');
-        ball.setAttribute('number', number);
-        setRow.appendChild(ball);
-    });
-    container.appendChild(setRow);
+    for (let setIndex = 1; setIndex <= 5; setIndex++) {
+        const setRow = document.createElement('div');
+        setRow.className = 'lotto-row';
+        const label = document.createElement('span');
+        label.className = 'lotto-set-label';
+        label.textContent = `${setIndex}세트`;
+        setRow.appendChild(label);
+
+        const balls = document.createElement('div');
+        balls.className = 'lotto-ball-line';
+        const numbers = new Set();
+        while (numbers.size < 6) numbers.add(Math.floor(Math.random() * 45) + 1);
+        Array.from(numbers).sort((a, b) => a - b).forEach(number => {
+            const ball = document.createElement('lotto-ball');
+            ball.setAttribute('number', number);
+            balls.appendChild(ball);
+        });
+        setRow.appendChild(balls);
+        container.appendChild(setRow);
+    }
 });
 
 const themeBtn = document.getElementById('theme-btn');
