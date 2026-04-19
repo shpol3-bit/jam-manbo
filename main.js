@@ -48,7 +48,9 @@ customElements.define('lotto-ball', LottoBall);
 
 const generateBtn = document.getElementById('generate-btn');
 const lottoBallsContainer = document.getElementById('lotto-balls-container');
+const themeBtn = document.getElementById('theme-btn');
 
+// Lotto Logic
 generateBtn.addEventListener('click', () => {
     lottoBallsContainer.innerHTML = '';
     const numbers = new Set();
@@ -62,3 +64,19 @@ generateBtn.addEventListener('click', () => {
         lottoBallsContainer.appendChild(lottoBall);
     }
 });
+
+// Theme Logic
+let currentTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', currentTheme);
+updateThemeButton();
+
+themeBtn.addEventListener('click', () => {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    localStorage.setItem('theme', currentTheme);
+    updateThemeButton();
+});
+
+function updateThemeButton() {
+    themeBtn.textContent = currentTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+}
