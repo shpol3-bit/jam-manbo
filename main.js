@@ -1,46 +1,60 @@
 class LottoBall extends HTMLElement {
     constructor() {
         super();
-        const shadow = this.attachShadow({ mode: 'open' });
+        this.attachShadow({ mode: 'open' });
+    }
 
-        const number = this.getAttribute('number');
-        const color = this.getColor(number);
+    connectedCallback() {
+        this.render();
+    }
 
-        const style = document.createElement('style');
-        style.textContent = `
-            .ball {
-                width: 50px;
-                height: 50px;
-                border-radius: 50%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-size: 1.2rem;
-                font-weight: bold;
-                color: white;
-                background: radial-gradient(circle at 15px 15px, ${color}, #333);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                transition: transform 0.3s ease;
-            }
-            .ball:hover {
-                transform: scale(1.1);
-            }
-        `;
+    static get observedAttributes() {
+        return ['number'];
+    }
 
-        const ball = document.createElement('div');
-        ball.setAttribute('class', 'ball');
-        ball.textContent = number;
-
-        shadow.appendChild(style);
-        shadow.appendChild(ball);
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'number' && oldValue !== newValue) {
+            this.render();
+        }
     }
 
     getColor(number) {
-        if (number <= 10) return '#f44336'; // Red
-        if (number <= 20) return '#ff9800'; // Orange
-        if (number <= 30) return '#ffc107'; // Amber
-        if (number <= 40) return '#4caf50'; // Green
+        const n = parseInt(number);
+        if (n <= 10) return '#f44336'; // Red
+        if (n <= 20) return '#ff9800'; // Orange
+        if (n <= 30) return '#ffc107'; // Amber
+        if (n <= 40) return '#4caf50'; // Green
         return '#2196f3'; // Blue
+    }
+
+    render() {
+        const number = this.getAttribute('number');
+        if (!number) return;
+        
+        const color = this.getColor(number);
+
+        this.shadowRoot.innerHTML = `
+            <style>
+                .ball {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 1.2rem;
+                    font-weight: bold;
+                    color: white;
+                    background: radial-gradient(circle at 15px 15px, ${color}, #333);
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                    transition: transform 0.3s ease;
+                }
+                .ball:hover {
+                    transform: scale(1.1);
+                }
+            </style>
+            <div class="ball">${number}</div>
+        `;
     }
 }
 
