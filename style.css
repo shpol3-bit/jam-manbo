@@ -678,6 +678,15 @@ h1 {
     position: relative;
 }
 
+.choice-svg {
+    background: var(--bg-color);
+    border-radius: 10px;
+    display: block;
+    height: 150px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
 .picture-scene {
     background: linear-gradient(#8fd3ff 0%, #e9f7ff 54%, #f8e0a4 55%, #d6aa62 100%);
 }
@@ -868,11 +877,68 @@ h1 {
     box-shadow: 0 0 18px rgba(255, 209, 102, 0.75);
 }
 
+.psy-result-hero {
+    align-items: center;
+    background: var(--bg-color);
+    border: 1px solid var(--shadow);
+    border-radius: 12px;
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    gap: 18px;
+    margin: 18px 0;
+    padding: 18px;
+}
+
+.result-illustration .choice-svg {
+    height: 170px;
+    margin: 0;
+}
+
+.psy-result-hero strong {
+    color: var(--primary-color);
+    display: block;
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+}
+
+.psy-result-hero p {
+    margin: 0;
+}
+
+.psy-result-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.psy-result-grid article,
+.psy-result-advice,
 .test-result-text {
     background: var(--bg-color);
-    padding: 20px;
+    border: 1px solid var(--shadow);
     border-radius: 12px;
-    font-size: 1.1rem;
+    padding: 16px;
+}
+
+.psy-result-grid h4 {
+    color: var(--primary-color);
+    margin: 0 0 8px;
+}
+
+.psy-result-grid p,
+.psy-result-advice p {
+    margin: 0;
+}
+
+.psy-result-advice {
+    border-left: 4px solid var(--accent-color);
+    margin-top: 14px;
+}
+
+.psy-result-advice strong {
+    color: var(--primary-color);
+    display: block;
+    margin-bottom: 8px;
 }
 
 /* Info Section */
@@ -887,7 +953,7 @@ h1 {
 .hidden { display: none; }
 
 @media (max-width: 768px) {
-    .portal-grid, .fortune-card-grid, .test-grid, .choice-grid, .fortune-query-tabs, .fortune-deep-reading, .mbti-guide, .mbti-type-grid, .mbti-info-grid, .mbti-detail-head {
+    .portal-grid, .fortune-card-grid, .test-grid, .choice-grid, .psy-result-hero, .psy-result-grid, .fortune-query-tabs, .fortune-deep-reading, .mbti-guide, .mbti-type-grid, .mbti-info-grid, .mbti-detail-head {
         grid-template-columns: 1fr;
     }
     .navbar { flex-direction: column; gap: 10px; }

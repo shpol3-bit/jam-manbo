@@ -167,6 +167,10 @@ class FortuneManager {
                 this.generateFortune();
             });
         }
+        const compatibilityBtn = document.getElementById('check-compatibility-btn');
+        if (compatibilityBtn) {
+            compatibilityBtn.addEventListener('click', () => this.generateCompatibility());
+        }
     }
     populateSelects() {
         const yearSel = document.getElementById('birth-year');
@@ -219,6 +223,49 @@ class FortuneManager {
         `;
         this.resultsContainer.classList.remove('hidden');
         this.resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    generateCompatibility() {
+        const typeEl = document.getElementById('compatibility-type');
+        const relationEl = document.getElementById('compatibility-relation');
+        const target = document.getElementById('compatibility-results');
+        if (!typeEl || !relationEl || !target) return;
+
+        const partner = {
+            wood: '성장형',
+            fire: '표현형',
+            earth: '안정형',
+            metal: '원칙형',
+            water: '공감형'
+        }[typeEl.value] || '안정형';
+        const relation = {
+            romance: '연애·결혼',
+            friend: '친구·지인',
+            work: '직장·동업',
+            family: '가족·가까운 관계'
+        }[relationEl.value] || '연애·결혼';
+        const scoreSeed = (typeEl.value.length * 17 + relationEl.value.length * 9) % 19;
+        const score = 72 + scoreSeed;
+
+        target.innerHTML = `
+            <h3>${relation} 궁합 결과</h3>
+            <p class="fortune-summary">상대는 ${partner} 흐름으로 보고, 현재 관계의 편안함과 조율 포인트를 함께 해석했습니다.</p>
+            <div class="compatibility-score">
+                <strong>${score}점</strong>
+                <span>${score >= 84 ? '서로의 장점을 자연스럽게 살려주는 보완형 궁합입니다.' : score >= 76 ? '편안함과 차이를 함께 배우는 균형형 궁합입니다.' : '끌림은 있지만 속도와 표현을 맞춰야 하는 조율형 궁합입니다.'}</span>
+            </div>
+            <div class="fortune-expert-note">
+                <strong>사주 전문가 해설</strong>
+                <p>궁합은 상대를 좋고 나쁨으로 단정하는 풀이가 아닙니다. 두 사람이 어떤 상황에서 편안해지고, 어떤 대화에서 오해가 반복되는지를 보는 과정입니다. 좋은 궁합은 갈등이 없는 관계가 아니라 갈등 뒤에 회복하는 방식이 건강한 관계입니다.</p>
+            </div>
+            <div class="fortune-checklist">
+                <div>좋은 신호: 대화 후 마음이 더 복잡해지기보다 정리됩니다.</div>
+                <div>주의 신호: 같은 불편함을 계속 참고만 있고 실제 합의가 없습니다.</div>
+                <div>관계운 상승 행동: 연락, 돈, 약속, 휴식 기준을 짧고 구체적으로 나눠보세요.</div>
+            </div>
+        `;
+        target.classList.remove('hidden');
+        target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 }
 
@@ -275,37 +322,249 @@ class PsycheTestManager {
     }
     showResult(type, choice) {
         const lang = document.documentElement.lang || 'ko';
-        const results = {
+        const result = this.getDetailedResult(type, choice, lang);
+        const resultSvg = SVG_ASSETS[type][choice - 1] || '';
+        this.content.innerHTML = `
+            <h3>${lang === 'ko' ? '분석 결과' : 'Analysis Result'}</h3>
+            <div class="psy-result-hero">
+                <div class="result-illustration">${resultSvg}</div>
+                <div>
+                    <strong>${result.title}</strong>
+                    <p>${result.summary}</p>
+                </div>
+            </div>
+            <div class="psy-result-grid">
+                ${result.sections.map(section => `
+                    <article>
+                        <h4>${section.title}</h4>
+                        <p>${section.text}</p>
+                    </article>
+                `).join('')}
+            </div>
+            <div class="psy-result-advice">
+                <strong>${lang === 'ko' ? '오늘 바로 해볼 일' : 'Try this today'}</strong>
+                <p>${result.action}</p>
+            </div>
+            <button onclick="psycheTest.modal.classList.add('hidden')" style="margin-top:20px;">${lang === 'ko' ? '닫기' : 'Close'}</button>
+        `;
+    }
+
+    getDetailedResult(type, choice, lang) {
+        if (lang !== 'ko') {
+            return {
+                title: 'Detailed psychological reading',
+                summary: 'Your choice reflects a pattern in how you seek safety, energy, and direction.',
+                sections: [
+                    { title: 'Core tendency', text: 'You respond strongly to the scene you selected, which points to your preferred way of handling pressure and opportunity.' },
+                    { title: 'Relationship style', text: 'You feel comfortable when people respect your natural pace and communicate expectations clearly.' },
+                    { title: 'Growth point', text: 'Your next step is to turn your instinctive preference into a practical routine.' }
+                ],
+                action: 'Write down one small action that would make your day feel clearer and lighter.'
+            };
+        }
+
+        const data = {
             ocean: [
-                lang==='ko'?"평화와 안정을 중시하는 타입입니다. 갈등이 적고 명확하고 안정적인 커리어 경로를 선호합니다. 주변 사람들과 조화를 이루며 꾸준히 성장하는 것에 큰 가치를 둡니다. 당신의 내면은 고요한 바다처럼 깊고 따뜻한 에너지를 품고 있습니다.":"Values stability and harmony, prefers steady growth. Your inner self holds deep and warm energy like a calm sea.",
-                lang==='ko'?"도전을 즐기고 개척 정신이 강한 모험가입니다. 위험이 따르더라도 큰 보상이 있는 환경에서 능력을 발휘합니다. 남들이 가지 않은 길을 개척하며 자신의 존재감을 증명하고 싶어 합니다. 웅장한 절벽처럼 강인한 의지를 지닌 사람입니다.":"An adventurer with a strong pioneering spirit. You excel in high-reward environments and possess strong will like a grand cliff."
+                {
+                    title: '잔잔한 해변을 고른 안정형 조율가',
+                    summary: '당신은 마음이 편안해야 실력이 제대로 나오는 타입입니다. 빠른 변화보다 예측 가능한 리듬, 신뢰할 수 있는 사람, 차분한 환경에서 장점이 깊게 드러납니다.',
+                    sections: [
+                        { title: '핵심 성향', text: '겉으로는 부드럽지만 기준이 없는 사람은 아닙니다. 갈등을 키우기보다 흐름을 정돈하려는 힘이 있고, 사람 사이의 분위기를 섬세하게 읽습니다.' },
+                        { title: '일과 관계', text: '일에서는 장기적으로 쌓이는 역할, 꾸준함이 인정되는 환경, 약속과 기준이 분명한 팀이 잘 맞습니다. 관계에서는 갑작스러운 밀착보다 반복되는 배려에 마음을 엽니다.' },
+                        { title: '주의할 점', text: '평화를 지키려다 불편한 말을 너무 오래 삼킬 수 있습니다. 괜찮은 척하는 시간이 길어지면 어느 순간 마음이 닫히므로, 작은 불편함일 때 부드럽게 말하는 연습이 필요합니다.' }
+                    ],
+                    action: '오늘은 미뤄둔 답장이나 정리할 약속 하나를 차분하게 마무리해보세요. 생활의 작은 파도가 잦아들면 판단도 훨씬 선명해집니다.'
+                },
+                {
+                    title: '절벽 위 길을 고른 도전형 개척가',
+                    summary: '당신은 안정만으로는 만족하기 어려운 사람입니다. 약간의 긴장감, 새로운 과제, 스스로 증명할 수 있는 무대가 있을 때 에너지가 살아납니다.',
+                    sections: [
+                        { title: '핵심 성향', text: '위험을 무작정 좋아한다기보다, 의미 있는 목표를 위해 불확실성을 감당할 수 있는 편입니다. 남들이 망설이는 상황에서도 가능성을 먼저 보는 힘이 있습니다.' },
+                        { title: '일과 관계', text: '일에서는 새 프로젝트, 기획, 창업, 협상처럼 판단과 추진력이 필요한 영역에서 강합니다. 관계에서는 나를 붙잡기보다 함께 성장하려는 사람에게 끌립니다.' },
+                        { title: '주의할 점', text: '늘 강해 보여야 한다는 부담 때문에 피로를 늦게 알아차릴 수 있습니다. 도전과 소진은 다르므로, 멈추는 시간을 실패로 해석하지 않는 것이 중요합니다.' }
+                    ],
+                    action: '지금 하고 싶은 도전 하나를 적고, 오늘 할 수 있는 가장 작은 첫 단계만 정해보세요. 큰 결심보다 실행 가능한 첫 움직임이 운을 엽니다.'
+                }
             ],
             forest: [
-                lang==='ko'?"지혜롭고 신중하며 신뢰를 주는 타입입니다. 사람들은 당신의 묵직한 존재감과 장기적인 시야에 의지합니다. 어떤 상황에서도 흔들리지 않는 뿌리 깊은 가치관을 가지고 있습니다. 거대한 고목처럼 든든한 버팀목이 되어주는 존재입니다.":"Wise and cautious, someone people lean on. You have deep-rooted values and act as a reliable support like a giant ancient tree.",
-                lang==='ko'?"감수성이 풍부하고 내면 세계가 깊은 타입입니다. 직관력이 뛰어나며 자기 성찰을 중요하게 생각합니다. 눈에 보이는 것 너머의 본질을 꿰뚫어 보는 통찰력을 지녔습니다. 맑은 연못처럼 투명하고 순수한 영혼을 가진 예술가 기질이 있습니다.":"Highly intuitive with deep inner insight. You value self-reflection and possess an artist's soul, pure and transparent like a clear pond."
+                {
+                    title: '거대한 고목을 고른 신뢰형 버팀목',
+                    summary: '당신은 쉽게 흔들리지 않는 기준과 책임감을 가진 타입입니다. 시간이 지날수록 깊이가 드러나며, 주변 사람들은 당신에게 안정감과 신뢰를 느낍니다.',
+                    sections: [
+                        { title: '핵심 성향', text: '결정을 급하게 내리기보다 충분히 살펴본 뒤 움직입니다. 한 번 마음먹은 일은 오래 지켜내는 힘이 있고, 말보다 행동으로 책임을 보여주는 편입니다.' },
+                        { title: '일과 관계', text: '일에서는 관리, 운영, 교육, 상담, 분석처럼 경험이 쌓일수록 가치가 커지는 분야가 잘 맞습니다. 관계에서는 가벼운 약속보다 오래 지켜지는 신뢰를 중요하게 봅니다.' },
+                        { title: '주의할 점', text: '버티는 힘이 강한 만큼 도움을 요청하는 시점이 늦어질 수 있습니다. 모두를 지탱하려다 나의 뿌리가 마르지 않도록 부담을 나누는 연습이 필요합니다.' }
+                    ],
+                    action: '오늘은 혼자 떠안고 있는 일 하나를 적고, 누구에게 어떤 도움을 요청할 수 있는지 현실적으로 나눠보세요.'
+                },
+                {
+                    title: '맑은 연못을 고른 직관형 감수성가',
+                    summary: '당신은 눈에 보이는 말보다 분위기와 미묘한 감정을 먼저 읽는 사람입니다. 감수성과 직관이 깊고, 자기 성찰을 통해 방향을 찾는 힘이 있습니다.',
+                    sections: [
+                        { title: '핵심 성향', text: '사람의 표정, 말투, 공간의 분위기에 민감하게 반응합니다. 좋은 환경에서는 창의력과 공감력이 크게 살아나지만, 복잡한 관계 안에서는 쉽게 지칠 수 있습니다.' },
+                        { title: '일과 관계', text: '글쓰기, 디자인, 상담, 기획, 브랜딩처럼 감정과 의미를 다루는 일에 강점이 있습니다. 관계에서는 깊은 대화와 정서적 안전감을 중요하게 여깁니다.' },
+                        { title: '주의할 점', text: '상대의 반응을 너무 많이 해석하면 실제보다 마음이 복잡해집니다. 직관은 강점이지만, 확인되지 않은 추측까지 사실처럼 받아들이지 않도록 균형이 필요합니다.' }
+                    ],
+                    action: '오늘 느낀 감정을 세 문장으로 적어보세요. 감정에 이름을 붙이면 마음이 정리되고, 필요한 선택이 더 분명해집니다.'
+                }
             ],
             door: [
-                lang==='ko'?"전통적인 가치와 경험을 중요하게 생각합니다. 갑작스러운 변화보다는 익숙함 속에서 안정을 찾으며, 과거의 교훈을 미래의 자산으로 삼을 줄 아는 지혜로운 사람입니다. 나무 문처럼 따뜻하고 편안한 분위기를 풍깁니다.":"Values traditional values and experiences. You find stability in familiarity and use past lessons as future assets, emitting a warm vibe like a wooden door.",
-                lang==='ko'?"새로운 변화와 사회적 성공에 대한 열망이 큽니다. 자신을 화려하게 가꾸는 것을 즐기며, 목표를 향해 당당하게 나아가는 추진력이 돋보입니다. 화려한 금속 문처럼 세련되고 현대적인 감각을 지녔습니다.":"Strong desire for change and social success. You have the drive to move boldly toward your goals with a sophisticated and modern sense like an ornate metal door.",
-                lang==='ko'?"자신만의 독창적인 길을 가고자 하는 예술가 기질이 있습니다. 남들의 시선보다는 내면의 목소리에 집중하며, 비밀스럽고 신비로운 매력을 지닌 사람입니다. 석문처럼 단단하고 묵직한 신념을 가지고 있습니다.":"An artistic spirit seeking a unique path. You focus on your inner voice rather than others' opinions, possessing a mysterious charm and solid beliefs like a stone door."
+                {
+                    title: '오래된 나무 문을 고른 온기형 현실주의자',
+                    summary: '당신은 익숙함 속에서 안정감을 찾고, 경험을 통해 검증된 것을 신뢰하는 타입입니다. 사람에게도 일에도 따뜻하지만 무게 있는 태도를 보입니다.',
+                    sections: [
+                        { title: '핵심 성향', text: '과거에 쌓아온 경험을 소중히 여기며, 갑작스러운 변화보다 준비된 변화를 선호합니다. 한번 신뢰한 사람에게는 오래 마음을 주는 편입니다.' },
+                        { title: '기회 해석', text: '미래의 기회는 완전히 낯선 곳보다 이미 알고 있던 영역을 새롭게 다듬을 때 열립니다. 오래 해온 일, 익숙한 관계, 쌓아둔 실력이 중요한 자산입니다.' },
+                        { title: '주의할 점', text: '안정이 지나치면 새로운 가능성을 늦게 받아들일 수 있습니다. 익숙한 선택을 하더라도 작은 변화 하나를 더하면 운의 폭이 넓어집니다.' }
+                    ],
+                    action: '최근 미뤄둔 익숙한 일을 하나 골라 새 방식으로 정리해보세요. 오래된 문도 손잡이를 바꾸면 새로운 길처럼 느껴집니다.'
+                },
+                {
+                    title: '화려한 금속 문을 고른 성취형 추진가',
+                    summary: '당신은 더 나은 위치, 더 넓은 무대, 눈에 보이는 성장을 원하는 타입입니다. 목표가 분명할수록 집중력과 추진력이 강해집니다.',
+                    sections: [
+                        { title: '핵심 성향', text: '자신을 발전시키고 싶다는 욕구가 강합니다. 남 앞에 서는 것을 두려워하기보다, 준비가 되었을 때 제대로 인정받고 싶어 합니다.' },
+                        { title: '기회 해석', text: '새로운 제안, 승진, 발표, 브랜딩, 외부 활동처럼 나를 드러내는 기회와 잘 맞습니다. 단, 화려함보다 실질적인 조건이 받쳐주는지 확인해야 합니다.' },
+                        { title: '주의할 점', text: '성과를 빨리 보고 싶은 마음 때문에 과정의 피로를 무시할 수 있습니다. 무리한 비교보다 나만의 속도로 성장 지표를 정하는 것이 중요합니다.' }
+                    ],
+                    action: '오늘은 보여주고 싶은 나의 강점 하나를 정리해보세요. 이력, 포트폴리오, 소개 문장처럼 보이는 형태로 남기면 좋습니다.'
+                },
+                {
+                    title: '비밀스러운 석문을 고른 독창형 탐구자',
+                    summary: '당신은 남들이 쉽게 보지 못하는 의미와 깊이를 찾는 사람입니다. 겉으로 드러난 길보다 내면의 확신과 독자적인 방향을 중요하게 여깁니다.',
+                    sections: [
+                        { title: '핵심 성향', text: '혼자 생각하는 시간이 필요하고, 깊이 파고드는 주제에서 집중력이 살아납니다. 대중적인 답보다 나만 납득할 수 있는 이유를 찾으려 합니다.' },
+                        { title: '기회 해석', text: '연구, 창작, 전문 기술, 깊은 공부처럼 시간이 걸리지만 독자성이 쌓이는 영역에서 기회가 열립니다. 남들이 이해하지 못해도 꾸준히 다듬으면 강한 무기가 됩니다.' },
+                        { title: '주의할 점', text: '혼자만의 세계가 깊어질수록 필요한 도움이나 피드백을 놓칠 수 있습니다. 닫힌 문이 아니라 선택적으로 여는 문을 만드는 것이 성장의 핵심입니다.' }
+                    ],
+                    action: '요즘 혼자만 생각하던 아이디어를 한 사람에게 설명해보세요. 말로 꺼내는 순간 방향이 더 선명해질 수 있습니다.'
+                }
             ],
             oasis: [
-                lang==='ko'?"문제가 생기면 즉각적으로 해결하는 실천가입니다. 위기 상황에서 본능적으로 가장 필요한 것을 파악하며, 군더더기 없는 빠른 의사결정이 장점입니다. 오아시스의 물처럼 생명력 넘치고 활기찬 에너지를 가지고 있습니다.":"A doer who solves problems immediately. You instinctively identify needs in crises and excel in quick decision-making, full of life like oasis water.",
-                lang==='ko'?"멀리 내다보고 에너지를 비축하는 전략가입니다. 당장의 갈증 해결보다 지속 가능한 안정을 먼저 생각하며, 신중하게 상황을 분석한 뒤 움직이는 타입입니다. 오아시스의 그늘처럼 사람들에게 휴식을 주는 편안한 사람입니다.":"A strategist who saves energy and looks ahead. You prioritize sustainable stability over immediate needs, providing comfort to others like the shade of an oasis."
+                {
+                    title: '물을 먼저 마신 즉시 해결형 실천가',
+                    summary: '당신은 문제 앞에서 오래 망설이기보다 가장 필요한 것부터 처리하는 타입입니다. 위기 상황에서 우선순위를 빠르게 잡는 능력이 있습니다.',
+                    sections: [
+                        { title: '핵심 성향', text: '복잡한 설명보다 당장 효과가 있는 행동을 선호합니다. 에너지가 떨어졌을 때도 핵심 문제를 먼저 해결하려는 현실 감각이 강합니다.' },
+                        { title: '스트레스 대처', text: '스트레스가 오면 생각보다 몸이 먼저 반응합니다. 그래서 충분한 수분, 식사, 수면처럼 기본 회복이 되면 판단력이 빠르게 돌아옵니다.' },
+                        { title: '주의할 점', text: '빠른 해결이 장점이지만, 감정의 원인을 지나치게 단순화할 수 있습니다. 급한 불을 끈 뒤에는 왜 그런 상황이 반복되는지도 살펴야 합니다.' }
+                    ],
+                    action: '오늘 가장 급한 문제 하나만 골라 20분 안에 할 수 있는 조치를 해보세요. 작은 해결감이 다음 선택의 힘이 됩니다.'
+                },
+                {
+                    title: '그늘에서 쉰 회복형 전략가',
+                    summary: '당신은 당장의 반응보다 오래 버틸 수 있는 힘을 먼저 챙기는 타입입니다. 급할수록 한 발 물러서서 전체 상황을 보려는 성향이 있습니다.',
+                    sections: [
+                        { title: '핵심 성향', text: '에너지를 아껴 써야 좋은 결과가 난다는 것을 본능적으로 압니다. 무리하게 밀어붙이기보다 회복과 준비를 통해 더 정확하게 움직입니다.' },
+                        { title: '스트레스 대처', text: '혼자 정리할 시간, 조용한 공간, 충분한 휴식이 있어야 마음이 안정됩니다. 쉬는 시간을 낭비로 보지 않을 때 오히려 성과가 좋아집니다.' },
+                        { title: '주의할 점', text: '너무 오래 준비만 하면 기회를 놓칠 수 있습니다. 회복이 끝났다면 작은 실행으로 전환하는 기준을 미리 정해두는 것이 좋습니다.' }
+                    ],
+                    action: '오늘은 15분만 알림을 끄고 쉬어보세요. 쉬고 난 뒤 해야 할 일을 세 가지 이하로 줄이면 부담이 크게 낮아집니다.'
+                }
             ],
             animal: [
-                lang==='ko'?"지식과 배움을 즐기며 차분하게 상황을 분석합니다. 혼자만의 시간을 통해 통찰력을 얻으며, 남들이 보지 못하는 어둠 속의 진실을 찾아내는 능력이 탁월합니다. 부엉이처럼 영리하고 객관적인 시각을 유지합니다.":"Enjoys knowledge and learning, analyzing situations calmly. You gain insight through solitude and excel at finding hidden truths, clever like an owl.",
-                lang==='ko'?"에너지가 넘치고 리더십이 뛰어나 집단을 이끕니다. 자신의 영역을 보호하려는 책임감이 강하며, 목표가 정해지면 거침없이 달려가는 용맹함을 가졌습니다. 호랑이처럼 위엄 있고 강렬한 카리스마를 내뿜습니다.":"Full of energy with excellent leadership. You have a strong sense of responsibility and the bravery to pursue goals relentlessly, majestic like a tiger."
+                {
+                    title: '부엉이를 고른 통찰형 관찰자',
+                    summary: '당신은 조용히 관찰하면서 핵심을 파악하는 타입입니다. 말이 많지 않아도 상황의 흐름과 사람의 의도를 날카롭게 읽어냅니다.',
+                    sections: [
+                        { title: '핵심 성향', text: '혼자 있는 시간에 생각이 깊어지고, 정보를 모아 구조화하는 능력이 좋습니다. 겉으로 드러난 것보다 숨은 맥락을 파악하는 데 강합니다.' },
+                        { title: '사회적 성향', text: '넓은 관계보다 믿을 수 있는 소수와 깊게 연결될 때 편안합니다. 조용하지만 필요한 순간에는 정확한 조언으로 존재감을 드러냅니다.' },
+                        { title: '주의할 점', text: '너무 오래 관찰만 하면 마음속 결론이 굳어질 수 있습니다. 확인되지 않은 추측은 질문으로 풀어야 관계가 편해집니다.' }
+                    ],
+                    action: '오늘은 궁금했던 일 하나를 혼자 결론 내리지 말고 직접 물어보세요. 짧은 확인이 긴 고민을 줄여줍니다.'
+                },
+                {
+                    title: '호랑이를 고른 카리스마형 리더',
+                    summary: '당신은 에너지가 강하고 목표가 생기면 빠르게 움직이는 타입입니다. 자신의 영역을 지키려는 책임감과 추진력이 뚜렷합니다.',
+                    sections: [
+                        { title: '핵심 성향', text: '위축되기보다 부딪히며 길을 찾는 편입니다. 사람들을 이끌거나 분위기를 전환하는 힘이 있고, 필요한 순간에는 결정을 미루지 않습니다.' },
+                        { title: '사회적 성향', text: '관계에서는 솔직함과 의리를 중요하게 봅니다. 나를 믿고 따라오는 사람에게는 강한 보호 본능을 보이지만, 불명확한 태도에는 답답함을 느낄 수 있습니다.' },
+                        { title: '주의할 점', text: '강한 표현이 상대에게는 압박으로 느껴질 수 있습니다. 리더십이 더 오래 가려면 지시보다 설명, 속도보다 합의가 필요할 때가 있습니다.' }
+                    ],
+                    action: '오늘은 밀어붙이고 싶은 일 하나를 정하되, 함께하는 사람에게 이유와 기준을 먼저 설명해보세요. 추진력이 신뢰로 바뀝니다.'
+                }
             ]
         };
 
-        const resultSvg = SVG_ASSETS[type][choice-1];
-        this.content.innerHTML = `
-            <h3>${lang==='ko'?'분석 결과':'Analysis Result'}</h3>
-            <div class="result-illustration">${resultSvg}</div>
-            <p class="test-result-text">${results[type][choice-1]}</p>
-            <button onclick="psycheTest.modal.classList.add('hidden')" style="margin-top:20px;">${lang==='ko'?'닫기':'Close'}</button>
+        return data[type][choice - 1];
+    }
+}
+
+class MBTIManager {
+    constructor() {
+        this.grid = document.getElementById('mbti-type-grid');
+        this.detail = document.getElementById('mbti-detail');
+        this.types = ['INTJ','INTP','ENTJ','ENTP','INFJ','INFP','ENFJ','ENFP','ISTJ','ISFJ','ESTJ','ESFJ','ISTP','ISFP','ESTP','ESFP'];
+        this.names = {
+            INTJ: '전략가', INTP: '논리술사', ENTJ: '통솔자', ENTP: '변론가',
+            INFJ: '옹호자', INFP: '중재자', ENFJ: '선도자', ENFP: '활동가',
+            ISTJ: '현실주의자', ISFJ: '수호자', ESTJ: '경영자', ESFJ: '집정관',
+            ISTP: '장인', ISFP: '모험가', ESTP: '사업가', ESFP: '연예인'
+        };
+        this.init();
+    }
+
+    init() {
+        if (!this.grid || !this.detail) return;
+        this.grid.innerHTML = this.types.map((type, index) => `
+            <button type="button" class="mbti-type-btn ${index === 0 ? 'active' : ''}" data-mbti="${type}">
+                <strong>${type}</strong>
+                <span>${this.names[type]}</span>
+            </button>
+        `).join('');
+        this.grid.querySelectorAll('.mbti-type-btn').forEach(button => {
+            button.addEventListener('click', () => this.show(button.dataset.mbti));
+        });
+        this.show('INTJ');
+    }
+
+    show(type) {
+        const data = this.readType(type);
+        this.grid.querySelectorAll('.mbti-type-btn').forEach(button => {
+            button.classList.toggle('active', button.dataset.mbti === type);
+        });
+        this.detail.innerHTML = `
+            <div class="mbti-detail-head">
+                <div><span class="mbti-code">${type}</span><h3>${this.names[type]}</h3></div>
+                <p>${data.summary}</p>
+            </div>
+            <div class="mbti-expert-note">
+                <strong>MBTI 상세 해설</strong>
+                <p>${data.note}</p>
+            </div>
+            <div class="mbti-info-grid">
+                ${this.renderBlock('핵심 성향', data.traits)}
+                ${this.renderBlock('관계 방식', data.relationship)}
+                ${this.renderBlock('연애 스타일', data.love)}
+                ${this.renderBlock('잘 맞는 궁합', data.best)}
+                ${this.renderBlock('주의할 궁합', data.caution)}
+                ${this.renderBlock('성장 팁', data.growth)}
+            </div>
         `;
+        this.detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    renderBlock(title, text) {
+        return `<article class="mbti-info-card"><h4>${title}</h4><p>${text}</p></article>`;
+    }
+
+    readType(type) {
+        const intro = type[0] === 'E' ? '사람과 환경을 직접 만나며 에너지가 살아나는' : '혼자 생각을 정리할 때 에너지가 회복되는';
+        const info = type[1] === 'N' ? '가능성과 의미를 먼저 보는' : '현실의 단서와 경험을 중요하게 보는';
+        const decision = type[2] === 'T' ? '논리와 기준으로 판단하는' : '감정과 관계의 온도를 함께 살피는';
+        const rhythm = type[3] === 'J' ? '계획과 마감이 있을 때 안정되는' : '선택지를 열어둘 때 유연해지는';
+        const best = type[0] === 'I' ? '표현이 자연스럽고 시야를 넓혀주는 E 유형과 보완이 좋습니다.' : '깊이와 안정감을 주는 I 유형과 균형이 좋습니다.';
+        const caution = type[3] === 'J' ? '즉흥적인 P 유형과는 일정과 약속 기준을 맞춰야 합니다.' : '계획을 중시하는 J 유형과는 자유와 책임의 기준을 조율해야 합니다.';
+        return {
+            summary: `${this.names[type]} 유형은 ${intro} 사람이며, ${info} 성향이 강합니다.`,
+            note: `${type}는 ${intro} 방식으로 컨디션을 회복하고, 중요한 순간에는 ${decision} 경향이 두드러집니다. 또한 ${rhythm} 편이므로, 나에게 맞는 관계의 속도와 일의 방식을 찾는 기준으로 읽으면 좋습니다.`,
+            traits: `${info} 편이라 같은 상황에서도 남들이 놓치는 맥락을 잘 포착합니다. 다만 강점이 과해지면 반대 성향의 사람을 답답하게 느낄 수 있습니다.`,
+            relationship: `관계에서는 ${type[0] === 'E' ? '대화를 통해 마음을 정리하는 편' : '충분히 생각한 뒤 마음을 여는 편'}입니다. 상대가 이 속도를 존중할 때 편안함이 커집니다.`,
+            love: `${type[2] === 'F' ? '정서적 안전감과 진심 어린 표현' : '신뢰, 존중, 일관된 태도'}가 중요합니다. 억지로 맞추는 관계보다 서로의 방식을 설명할 수 있는 관계가 오래 갑니다.`,
+            best,
+            caution,
+            growth: `${type[3] === 'J' ? '계획을 세우되 변수가 생겼을 때 조정할 여지를 남기면 좋습니다.' : '자유롭게 움직이되 마감과 약속을 작게 정하면 성과가 더 안정됩니다.'}`
+        };
     }
 }
 
@@ -324,30 +583,41 @@ customElements.define('lotto-ball', LottoBall);
 const langManager = new LanguageManager();
 const fortuneManager = new FortuneManager();
 window.psycheTest = new PsycheTestManager();
+const mbtiManager = new MBTIManager();
 
 document.getElementById('generate-btn').addEventListener('click', () => {
     const container = document.getElementById('lotto-balls-container');
     container.innerHTML = '';
-    const setRow = document.createElement('div');
-    setRow.className = 'lotto-row';
-    const numbers = new Set();
-    while (numbers.size < 6) numbers.add(Math.floor(Math.random() * 45) + 1);
-    Array.from(numbers).sort((a, b) => a - b).forEach(number => {
-        const ball = document.createElement('lotto-ball');
-        ball.setAttribute('number', number);
-        setRow.appendChild(ball);
-    });
-    container.appendChild(setRow);
+    for (let setIndex = 1; setIndex <= 5; setIndex++) {
+        const setRow = document.createElement('div');
+        setRow.className = 'lotto-row';
+        const label = document.createElement('span');
+        label.className = 'lotto-set-label';
+        label.textContent = `${setIndex}세트`;
+        setRow.appendChild(label);
+
+        const balls = document.createElement('div');
+        balls.className = 'lotto-ball-line';
+        const numbers = new Set();
+        while (numbers.size < 6) numbers.add(Math.floor(Math.random() * 45) + 1);
+        Array.from(numbers).sort((a, b) => a - b).forEach(number => {
+            const ball = document.createElement('lotto-ball');
+            ball.setAttribute('number', number);
+            balls.appendChild(ball);
+        });
+        setRow.appendChild(balls);
+        container.appendChild(setRow);
+    }
 });
 
 const themeBtn = document.getElementById('theme-btn');
 let currentTheme = localStorage.getItem('theme') || 'light';
 document.documentElement.setAttribute('data-theme', currentTheme);
-themeBtn.textContent = currentTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+themeBtn.textContent = currentTheme === 'light' ? '다크 모드' : '라이트 모드';
 
 themeBtn.addEventListener('click', () => {
     currentTheme = currentTheme === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', currentTheme);
     localStorage.setItem('theme', currentTheme);
-    themeBtn.textContent = currentTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+    themeBtn.textContent = currentTheme === 'light' ? '다크 모드' : '라이트 모드';
 });
