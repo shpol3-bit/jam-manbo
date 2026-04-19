@@ -9,7 +9,7 @@ const translations = {
         "home-subtitle": "당신의 삶에 깊은 통찰을 제공하는 운세와 심리 탐험의 공간입니다.",
         "home-fortune-desc": "생년월일 기반의 정밀한 사주 분석과 오늘의 운세를 확인하세요.",
         "home-psy-desc": "무의식 속 당신의 진정한 모습과 미래를 심리 테스트로 알아보세요.",
-        "home-mbti-desc": "16가지 MBTI 유형별 성향, 성격, 연애 스타일과 궁합을 확인하세요.",
+        "home-mbti-desc": "심리테스트와 분리된 MBTI 전용 카테고리에서 16가지 유형별 성향, 성격, 연애 스타일과 궁합을 확인하세요.",
         "home-lotto-desc": "과학적 난수 알고리즘을 활용한 오늘의 행운 번호를 생성합니다.",
         "fortune-title": "오늘의 사주 & 운세",
         "fortune-subtitle": "태어난 정보를 입력하여 당신의 우주적 설계를 확인하세요.",
@@ -20,7 +20,7 @@ const translations = {
         "psy-title": "심리 통찰 테스트",
         "psy-subtitle": "시각적 선택을 통해 마음의 지도를 탐험하세요.",
         "mbti-title": "MBTI 성향 & 궁합",
-        "mbti-subtitle": "유형별 성격, 관계 방식, 연애 궁합과 성장 포인트를 확인하세요.",
+        "mbti-subtitle": "심리테스트와 분리된 MBTI 전용 카테고리에서 유형별 성격, 관계 방식, 연애 궁합과 성장 포인트를 확인하세요.",
         "test-ocean-title": "바다의 길",
         "test-ocean-desc": "당신이 선택한 바닷길은 커리어에 대해 무엇을 말해줄까요?",
         "test-forest-title": "숲의 선택",
@@ -714,7 +714,7 @@ class FortuneManager {
             <div class="result-card wide fortune-intro">
                 <h3>${lang === 'ko' ? '정밀 사주풀이 항목 조회' : 'Detailed Saju Reading'}</h3>
                 <p>${lang === 'ko' ? '출생 정보' : 'Birth info'}: ${data.birthLabel}</p>
-                <p class="fortune-guide">${lang === 'ko' ? '아래 항목을 눌러 필요한 풀이를 하나씩 조회하세요.' : 'Select a topic below to view each reading one by one.'}</p>
+                <p class="fortune-guide">${lang === 'ko' ? '아래 항목을 누르면 GPT 전문가 스타일의 부드러운 한글 해설과 함께 필요한 풀이를 하나씩 조회할 수 있습니다.' : 'Select a topic below to view each reading one by one with an expert-style explanation.'}</p>
             </div>
             <div class="fortune-query-tabs">
                 ${data.categories.map((category, index) => `
@@ -753,6 +753,10 @@ class FortuneManager {
         return `
             <h3>${category.title}</h3>
             <p class="fortune-summary">${category.summary}</p>
+            <div class="fortune-expert-note">
+                <strong>${document.documentElement.lang === 'ko' ? 'AI 사주 전문가 코멘트' : 'AI Saju Expert Note'}</strong>
+                <p>${this.createExpertComment(category)}</p>
+            </div>
             ${category.highlights ? `
                 <div class="fortune-highlights">
                     ${category.highlights.map(item => `<span>${item}</span>`).join('')}
@@ -765,6 +769,34 @@ class FortuneManager {
                 </div>
             ` : ''}
         `;
+    }
+
+    createExpertComment(category) {
+        const lang = document.documentElement.lang || 'ko';
+        if (lang !== 'ko') {
+            return `This ${category.title} section should be read as practical guidance rather than a fixed prediction. Start with the main theme, then use the details below to adjust your choices with more calm and precision.`;
+        }
+
+        const comments = {
+            saju: '먼저 원국은 타고난 성향의 지도라고 보면 좋습니다. 좋은 기운과 부족한 기운을 선악으로 나누기보다, 내가 어떤 상황에서 편안해지고 어떤 상황에서 쉽게 지치는지를 읽어내는 것이 핵심입니다.',
+            yearly: '올해의 사주는 큰 결정을 겁내라는 뜻이 아니라, 방향을 정하기 전에 삶의 구조를 먼저 정돈하라는 신호에 가깝습니다. 무리하게 확장하기보다 반복 가능한 습관과 관계를 만들면 운이 더 안정적으로 열립니다.',
+            monthly: '한달 운세는 지금 당장 바꿔야 할 생활 리듬을 알려주는 항목입니다. 이번 달에는 감정적으로 서두르기보다 일정, 돈, 관계를 차분히 정리할수록 체감 운이 좋아집니다.',
+            daily: '오늘 하루 운세는 거창한 예언보다 하루의 우선순위를 잡아주는 안내입니다. 작은 확인, 짧은 정리, 정확한 답장처럼 사소해 보이는 선택이 오늘의 흐름을 부드럽게 만듭니다.',
+            loveToday: '오늘의 연애운은 상대의 마음을 맞히는 데 쓰기보다, 내가 어떤 태도로 다가가면 관계가 편안해지는지 살피는 데 쓰면 좋습니다. 억지로 분위기를 만들기보다 따뜻하고 명확한 표현이 유리합니다.',
+            loveMonth: '이번 달 연애운은 관계의 속도보다 안정감을 보는 항목입니다. 좋아하는 마음이 있어도 생활 리듬과 약속을 어떻게 맞춰가는지가 더 중요하게 작용합니다.',
+            moneyMonth: '이번 달 금전운은 큰돈의 방향보다 새는 돈과 조건 확인을 먼저 보라는 흐름입니다. 수익 기회가 있어도 숫자로 확인하고, 지출은 감정이 가라앉은 뒤 결정하는 편이 좋습니다.',
+            personality: '성향과 강점은 내가 이미 잘하는 것을 더 건강하게 쓰기 위한 해설입니다. 장점은 과하면 부담이 되므로, 아래 내용을 읽을 때 “어디까지가 내 힘이고 어디부터가 과로인가”를 함께 살펴보세요.',
+            career: '일과 재능은 직업 이름 하나를 정해주는 항목이 아니라, 어떤 방식으로 일할 때 성과가 오래가는지를 보는 항목입니다. 잘 맞는 환경과 피해야 할 업무 리듬을 함께 읽으면 현실적인 선택에 도움이 됩니다.',
+            careerYear: '올해의 커리어운은 지금의 노력이 어떤 형태로 드러나야 하는지 알려줍니다. 실력을 혼자 쌓는 데서 끝내지 말고, 기록과 결과물로 보이게 만드는 것이 올해의 중요한 포인트입니다.',
+            health: '건강운은 불안을 키우기 위한 항목이 아니라 몸이 보내는 신호를 일찍 알아차리기 위한 안내입니다. 컨디션이 무너지면 판단도 흔들리므로, 운을 좋게 쓰려면 회복 루틴을 먼저 챙기는 것이 좋습니다.',
+            compatibility: '궁합은 상대를 단정하는 기준이 아니라 관계의 호흡을 읽는 도구입니다. 잘 맞는 사람은 나를 억지로 바꾸기보다 생활이 좋아지는 방향으로 자극을 주는 사람입니다.',
+            lucky: '행운 포인트는 미신처럼 하나만 믿기보다 마음가짐을 정돈하는 장치로 활용하세요. 색, 방향, 날짜보다 중요한 것은 그날의 행동을 조금 더 가볍고 정확하게 만드는 것입니다.',
+            wealth: '금전운은 돈이 들어오는 운만 보는 것이 아니라 돈을 지키는 습관까지 함께 보는 항목입니다. 좋은 기회일수록 조건을 천천히 확인하고, 반복 지출을 관리하면 재물 흐름이 더 안정됩니다.',
+            romance: '연애와 인간관계는 내가 사랑을 주고받는 방식을 이해하기 위한 항목입니다. 마음을 숨기고 상대가 알아주길 기다리기보다, 원하는 것과 불편한 점을 부드럽게 말하는 연습이 관계운을 올립니다.',
+            today: '오늘의 운세는 하루를 더 편하게 쓰기 위한 작은 나침반입니다. 감정이 올라올수록 바로 결론 내리지 말고, 잠깐 멈춘 뒤 중요한 일부터 하나씩 정리해보세요.'
+        };
+
+        return comments[category.id] || `${category.title} 항목은 지금 내 삶에서 특히 의식하면 좋은 흐름을 정리한 해설입니다. 아래 내용을 고정된 미래로 보기보다, 오늘의 선택을 더 부드럽고 현명하게 만드는 참고점으로 활용하세요.`;
     }
 }
 
@@ -903,6 +935,10 @@ class MBTIManager {
                 </div>
                 <p>${data.summary}</p>
             </div>
+            <div class="mbti-expert-note">
+                <strong>MBTI 상세 해설</strong>
+                <p>${this.createInsight(type, data)}</p>
+            </div>
             <div class="mbti-info-grid">
                 ${this.renderBlock('핵심 성향', data.traits)}
                 ${this.renderBlock('성격과 강점', data.strengths)}
@@ -915,6 +951,20 @@ class MBTIManager {
             </div>
         `;
         this.detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    createInsight(type, data) {
+        const energy = type[0] === 'E'
+            ? '사람과 환경을 직접 만나며 에너지가 살아나는 편'
+            : '혼자 정리하고 깊게 생각할 때 에너지가 회복되는 편';
+        const decision = type[2] === 'T'
+            ? '중요한 선택에서는 감정보다 기준, 논리, 효율을 먼저 확인합니다'
+            : '중요한 선택에서는 사람의 마음, 관계의 온도, 가치의 진정성을 먼저 살핍니다';
+        const lifestyle = type[3] === 'J'
+            ? '예측 가능한 계획과 마감이 있을 때 안정감이 커집니다'
+            : '선택지를 열어두고 상황에 맞게 움직일 때 가능성이 넓어집니다';
+
+        return `${data.name}(${type}) 유형은 ${energy}. ${decision}. 또한 ${lifestyle}. 그래서 아래 항목을 볼 때 단순히 장단점으로 나누기보다, 나에게 맞는 관계의 속도와 일의 방식을 찾는 기준으로 읽으면 훨씬 현실적으로 도움이 됩니다.`;
     }
 
     renderBlock(title, text) {

@@ -326,6 +326,25 @@ h1 {
     margin: 14px 0;
 }
 
+.fortune-expert-note {
+    background: var(--bg-color);
+    border: 1px solid var(--shadow);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 8px;
+    margin: 16px 0;
+    padding: 16px;
+}
+
+.fortune-expert-note strong {
+    color: var(--primary-color);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.fortune-expert-note p {
+    margin: 0;
+}
+
 .fortune-highlights {
     display: flex;
     flex-wrap: wrap;
@@ -384,6 +403,36 @@ h1 {
     margin: 0 auto 22px;
     max-width: 720px;
     text-align: center;
+}
+
+.mbti-guide {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 0 0 24px;
+}
+
+.mbti-guide article {
+    background: var(--container-bg);
+    border: 1px solid var(--shadow);
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.mbti-guide strong,
+.mbti-guide span {
+    display: block;
+}
+
+.mbti-guide strong {
+    color: var(--primary-color);
+    margin-bottom: 6px;
+}
+
+.mbti-guide span {
+    color: var(--secondary-color);
+    font-size: 0.92rem;
+    line-height: 1.5;
 }
 
 .mbti-type-grid {
@@ -463,6 +512,25 @@ h1 {
 .mbti-detail-head p {
     color: var(--secondary-color);
     font-weight: 700;
+    margin: 0;
+}
+
+.mbti-expert-note {
+    background: var(--bg-color);
+    border: 1px solid var(--shadow);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    padding: 16px;
+}
+
+.mbti-expert-note strong {
+    color: var(--primary-color);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.mbti-expert-note p {
     margin: 0;
 }
 
@@ -751,7 +819,7 @@ h1 {
 .hidden { display: none; }
 
 @media (max-width: 768px) {
-    .portal-grid, .fortune-card-grid, .test-grid, .choice-grid, .fortune-query-tabs, .mbti-type-grid, .mbti-info-grid, .mbti-detail-head {
+    .portal-grid, .fortune-card-grid, .test-grid, .choice-grid, .fortune-query-tabs, .mbti-guide, .mbti-type-grid, .mbti-info-grid, .mbti-detail-head {
         grid-template-columns: 1fr;
     }
     .navbar { flex-direction: column; gap: 10px; }
