@@ -200,14 +200,14 @@ class FortuneManager {
     populateBirthControls(keepValues = false) {
         if (!this.yearSelect || !this.monthSelect || !this.daySelect) return;
         const lang = document.documentElement.lang || 'ko';
-        const previous = keepValues ? {
+        const previous = {
             year: this.yearSelect.value,
             month: this.monthSelect.value,
             day: this.daySelect.value,
             meridiem: this.meridiemSelect.value,
             hour: this.hourSelect.value,
             minute: this.minuteSelect.value
-        } : {};
+        };
 
         this.yearSelect.innerHTML = `<option value="">${lang === 'ko' ? '연도' : 'Year'}</option>`;
         for (let year = new Date().getFullYear(); year >= 1930; year--) {
@@ -231,12 +231,21 @@ class FortuneManager {
             this.minuteSelect.insertAdjacentHTML('beforeend', `<option value="${minute}">${padded}${lang === 'ko' ? '분' : ''}</option>`);
         }
 
-        this.yearSelect.value = previous.year || '1990';
-        this.monthSelect.value = previous.month || '1';
-        this.populateDays(previous.day || '1');
-        this.meridiemSelect.value = previous.meridiem || 'am';
-        this.hourSelect.value = previous.hour || '9';
-        this.minuteSelect.value = previous.minute || '0';
+        if (keepValues && previous.year) {
+            this.yearSelect.value = previous.year;
+            this.monthSelect.value = previous.month;
+            this.populateDays(previous.day);
+            this.meridiemSelect.value = previous.meridiem;
+            this.hourSelect.value = previous.hour;
+            this.minuteSelect.value = previous.minute;
+        } else {
+            this.yearSelect.value = '1990';
+            this.monthSelect.value = '1';
+            this.populateDays('1');
+            this.meridiemSelect.value = 'am';
+            this.hourSelect.value = '9';
+            this.minuteSelect.value = '0';
+        }
     }
 
     populateDays(preferredDay) {
@@ -268,9 +277,45 @@ class FortuneManager {
 
     generateFortune() {
         const birthInfo = this.getBirthInfo();
-        if (!birthInfo) return;
+        if (!birthInfo) {
+            alert(document.documentElement.lang === 'ko' ? '출생 정보를 모두 선택해주세요.' : 'Please select all birth information.');
+            return;
+        }
         this.currentReport = this.calculate(birthInfo);
         this.displayResults(this.currentReport);
+    }
+
+    generateCompatibility() {
+        if (!this.currentReport) {
+            alert(document.documentElement.lang === 'ko' ? '내 사주를 먼저 확인해주세요.' : 'Please check your Saju first.');
+            return;
+        }
+        const type = document.getElementById('compatibility-type').value;
+        const relation = document.getElementById('compatibility-relation').value;
+        const results = document.getElementById('compatibility-results');
+        const lang = document.documentElement.lang || 'ko';
+        
+        const typeNames = {
+            wood: { ko: '성장형(목)', en: 'Growth(Wood)' },
+            fire: { ko: '표현형(화)', en: 'Expressive(Fire)' },
+            earth: { ko: '안정형(토)', en: 'Stable(Earth)' },
+            metal: { ko: '원칙형(금)', en: 'Principled(Metal)' },
+            water: { ko: '공감형(수)', en: 'Empathetic(Water)' }
+        };
+        
+        const scores = { wood: 85, fire: 70, earth: 95, metal: 60, water: 80 };
+        const score = scores[type] || 75;
+        
+        results.innerHTML = `
+            <h3>${lang === 'ko' ? '궁합 분석 결과' : 'Compatibility Result'}</h3>
+            <div class="compatibility-score">
+                <strong>${score}점</strong>
+                <p>${lang === 'ko' ? `상대방은 ${typeNames[type].ko} 기질을 가졌으며, 귀하와는 ${score > 80 ? '매우 조화로운' : '서로 보완이 필요한'} 관계입니다.` : `Partner has ${typeNames[type].en} traits, showing a ${score > 80 ? 'highly harmonious' : 'complementary'} relationship.`}</p>
+            </div>
+            <p>${lang === 'ko' ? '서로의 다름을 인정할 때 관계의 운이 더욱 상승합니다. 상대의 장점을 먼저 바라보는 하루가 되시길 바랍니다.' : 'Embracing differences will improve your relationship luck. Try to focus on their strengths today.'}</p>
+        `;
+        results.classList.remove('hidden');
+        results.scrollIntoView({ behavior: 'smooth' });
     }
 
     calculate(birthInfo) {

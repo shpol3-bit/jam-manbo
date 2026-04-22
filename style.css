@@ -680,224 +680,99 @@ h1 {
 
 .choice-svg {
     background: var(--bg-color);
-    border-radius: 10px;
+    border-radius: 12px;
     display: block;
-    height: 150px;
-    margin-bottom: 10px;
+    height: 160px;
+    margin-bottom: 12px;
     width: 100%;
+    box-shadow: inset 0 2px 15px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
+/* Realistic Artistic Backgrounds for Psychological Tests */
+
+/* Ocean Theme: Deep sea to horizon glow */
+.choice-svg rect[fill="#a1c4fd"] {
+    fill: url(#grad-ocean-beach);
+}
+.choice-svg rect[fill="#4facfe"] {
+    fill: url(#grad-ocean-cliff);
+}
+
+/* Enhancing existing SVG elements with realistic filters */
+.choice-svg path, .choice-svg circle, .choice-svg rect:not([width="100%"]) {
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+}
+
+/* Realistic Background Styles for each choice */
 .picture-scene {
-    background: linear-gradient(#8fd3ff 0%, #e9f7ff 54%, #f8e0a4 55%, #d6aa62 100%);
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-size: cover;
 }
 
-.picture-scene span {
-    position: absolute;
-    display: block;
+/* Ocean: Realistic Beach Gradient */
+.ocean-beach {
+    background: linear-gradient(180deg, #87ceeb 0%, #f0f8ff 45%, #ffd700 46%, #deb887 100%);
 }
 
-.picture-scene .sun {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    right: 22px;
-    top: 18px;
-    background: #ffd166;
-    box-shadow: 0 0 24px rgba(255, 209, 102, 0.75);
+/* Forest: Misty Morning Light */
+.forest-mist {
+    background: linear-gradient(180deg, #2d5a27 0%, #1b5e20 60%, #0a2e0a 100%);
+    box-shadow: inset 0 0 80px rgba(255,255,255,0.1);
 }
 
-.picture-scene .moon {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    right: 24px;
-    top: 18px;
-    background: #f1f5f9;
-    box-shadow: -8px 0 0 #31425f inset;
+/* Door: Elegant Textures */
+.door-textured {
+    background: radial-gradient(circle at center, #5d4037 0%, #3e2723 100%);
 }
 
-.picture-scene .water {
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 56%;
-    background: repeating-linear-gradient(175deg, #1d8fbd 0 10px, #46bad6 10px 18px);
+/* Modern Card Layout for Choices */
+.choice-item {
+    background: var(--container-bg);
+    border: 1px solid var(--shadow);
+    border-radius: 20px;
+    padding: 20px;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    z-index: 1;
 }
 
-.picture-scene .shore {
-    left: -10%;
-    right: -10%;
-    bottom: -22px;
-    height: 70px;
-    border-radius: 50% 50% 0 0;
-    background: #e6c279;
+.choice-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px var(--shadow);
+    border-color: var(--primary-color);
 }
 
-.picture-scene .path-line {
-    left: 30%;
-    bottom: 0;
-    width: 36%;
-    height: 78px;
-    background: linear-gradient(105deg, transparent 0 35%, rgba(255,255,255,0.75) 36% 48%, transparent 49% 100%);
-    opacity: 0.75;
+.choice-item:hover .choice-svg {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
 }
 
-.ocean-cliff {
-    background: linear-gradient(#31425f 0%, #657b9a 52%, #244a67 53%, #102f45 100%);
-}
-
-.ocean-cliff .water {
-    background: repeating-linear-gradient(170deg, #113d58 0 12px, #256a83 12px 20px);
-}
-
-.picture-scene .cliff {
-    left: -16px;
-    bottom: 0;
-    width: 50%;
-    height: 86%;
-    clip-path: polygon(0 20%, 75% 35%, 100% 100%, 0 100%);
-    background: #5a5144;
-}
-
-.picture-scene .boat {
-    left: 54%;
-    bottom: 42%;
-    width: 42px;
-    height: 16px;
-    border-radius: 0 0 24px 24px;
-    background: #774936;
-}
-
-.picture-scene .dock {
-    left: 10%;
-    bottom: 28%;
-    width: 56%;
-    height: 12px;
-    background: #7f5539;
-    box-shadow: 0 12px 0 rgba(127, 85, 57, 0.55);
-}
-
-.forest-tree {
-    background: linear-gradient(#bde0fe 0%, #d8f3dc 52%, #8f6f45 53%, #5f4b32 100%);
-}
-
-.picture-scene .canopy {
-    left: 8%;
-    top: 8px;
-    width: 84%;
-    height: 90px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 35%, #52b788 0 26%, #2d6a4f 27% 100%);
-}
-
-.picture-scene .trunk {
-    left: 46%;
-    top: 64px;
-    width: 24px;
-    height: 84px;
-    background: #6f4e37;
-}
-
-.picture-scene .ground {
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 36%;
-    background: #6b8e4e;
-}
-
-.forest-pond {
-    background: linear-gradient(#d8f3dc 0%, #b7e4c7 56%, #52796f 57%, #2f5d62 100%);
-}
-
-.forest-pond .water {
-    left: 14%;
-    right: 14%;
-    bottom: 14px;
-    height: 58px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 50% 45%, #caf0f8 0 15%, #48cae4 16% 52%, #0077b6 53% 100%);
-}
-
-.picture-scene .reed {
-    left: 20%;
-    bottom: 42px;
-    width: 5px;
-    height: 50px;
-    background: #386641;
-    box-shadow: 14px 8px 0 #386641, 104px 4px 0 #386641;
-}
-
-.picture-scene .stone {
-    right: 18%;
-    bottom: 25px;
-    width: 28px;
-    height: 14px;
-    border-radius: 50%;
-    background: #adb5bd;
-}
-
-.picture-scene .glow {
-    left: 50%;
-    top: 35px;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #fff3b0;
-    box-shadow: -32px 18px 0 #fff3b0, 34px 28px 0 #fff3b0, 12px -8px 0 #fff3b0;
-}
-
-.forest-cabin {
-    background: linear-gradient(#9ec5fe 0%, #cfe1b9 56%, #7a9e5c 57%, #4f772d 100%);
-}
-
-.picture-scene .cabin {
-    left: 30%;
-    bottom: 26px;
-    width: 42%;
-    height: 48px;
-    background: #8d5524;
-}
-
-.picture-scene .roof {
-    left: 25%;
-    bottom: 72px;
-    width: 52%;
-    height: 36px;
-    clip-path: polygon(50% 0, 100% 100%, 0 100%);
-    background: #5c2e14;
-}
-
-.picture-scene .window {
-    left: 49%;
-    bottom: 44px;
-    width: 20px;
-    height: 18px;
-    background: #ffd166;
-    box-shadow: 0 0 18px rgba(255, 209, 102, 0.75);
+.choice-item p {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-top: 15px;
+    color: var(--text-color);
+    letter-spacing: -0.5px;
 }
 
 .psy-result-hero {
     align-items: center;
     background: var(--bg-color);
     border: 1px solid var(--shadow);
-    border-radius: 12px;
+    border-radius: 20px;
     display: grid;
-    grid-template-columns: 190px 1fr;
-    gap: 18px;
-    margin: 18px 0;
-    padding: 18px;
+    grid-template-columns: 200px 1fr;
+    gap: 25px;
+    margin: 25px 0;
+    padding: 25px;
+    box-shadow: 0 10px 20px var(--shadow);
 }
-
-.result-illustration .choice-svg {
-    height: 170px;
-    margin: 0;
-}
-
-.psy-result-hero strong {
-    color: var(--primary-color);
-    display: block;
-    font-size: 1.25rem;
     margin-bottom: 8px;
 }
 
