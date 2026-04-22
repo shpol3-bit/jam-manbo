@@ -133,6 +133,7 @@ class LanguageManager {
             this.currentLang = this.currentLang === 'ko' ? 'en' : 'ko';
             localStorage.setItem('lang', this.currentLang);
             this.updateText();
+            window.dispatchEvent(new CustomEvent('languagechange'));
         });
     }
     updateText() {
@@ -149,7 +150,9 @@ class LanguageManager {
 
 function showView(viewId) {
     document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
-    document.getElementById(`view-${viewId}`).classList.add('active');
+    const target = document.getElementById(`view-${viewId}`);
+    if (!target) return;
+    target.classList.add('active');
     window.scrollTo(0, 0);
 }
 
@@ -157,10 +160,31 @@ class FortuneManager {
     constructor() {
         this.form = document.getElementById('fortune-form');
         this.resultsContainer = document.getElementById('fortune-results');
+        this.yearSelect = document.getElementById('birth-year');
+        this.monthSelect = document.getElementById('birth-month');
+        this.daySelect = document.getElementById('birth-day');
+        this.meridiemSelect = document.getElementById('birth-meridiem');
+        this.hourSelect = document.getElementById('birth-hour');
+        this.minuteSelect = document.getElementById('birth-minute');
+        this.currentReport = null;
         this.init();
     }
+
     init() {
-        this.populateSelects();
+        this.populateBirthControls();
+        [this.yearSelect, this.monthSelect].forEach(select => {
+            if (select) select.addEventListener('change', () => this.populateDays());
+        });
+        window.addEventListener('languagechange', () => {
+            this.populateBirthControls(true);
+            if (this.currentReport) {
+                const birthInfo = this.getBirthInfo();
+                if (birthInfo) {
+                    this.currentReport = this.calculate(birthInfo);
+                    this.displayResults(this.currentReport);
+                }
+            }
+        });
         if (this.form) {
             this.form.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -172,57 +196,311 @@ class FortuneManager {
             compatibilityBtn.addEventListener('click', () => this.generateCompatibility());
         }
     }
-    populateSelects() {
-        const yearSel = document.getElementById('birth-year');
-        const monthSel = document.getElementById('birth-month');
-        const daySel = document.getElementById('birth-day');
-        if (!yearSel) return;
+
+    populateBirthControls(keepValues = false) {
+        if (!this.yearSelect || !this.monthSelect || !this.daySelect) return;
         const lang = document.documentElement.lang || 'ko';
-        for (let i = new Date().getFullYear(); i >= 1930; i--) yearSel.add(new Option(`${i}${lang==='ko'?'년':''}`, i));
-        for (let i = 1; i <= 12; i++) monthSel.add(new Option(`${i}${lang==='ko'?'월':''}`, i));
-        for (let i = 1; i <= 31; i++) daySel.add(new Option(`${i}${lang==='ko'?'일':''}`, i));
+        const previous = keepValues ? {
+            year: this.yearSelect.value,
+            month: this.monthSelect.value,
+            day: this.daySelect.value,
+            meridiem: this.meridiemSelect.value,
+            hour: this.hourSelect.value,
+            minute: this.minuteSelect.value
+        } : {};
+
+        this.yearSelect.innerHTML = `<option value="">${lang === 'ko' ? '연도' : 'Year'}</option>`;
+        for (let year = new Date().getFullYear(); year >= 1930; year--) {
+            this.yearSelect.insertAdjacentHTML('beforeend', `<option value="${year}">${year}${lang === 'ko' ? '년' : ''}</option>`);
+        }
+        this.monthSelect.innerHTML = `<option value="">${lang === 'ko' ? '월' : 'Month'}</option>`;
+        for (let month = 1; month <= 12; month++) {
+            this.monthSelect.insertAdjacentHTML('beforeend', `<option value="${month}">${month}${lang === 'ko' ? '월' : ''}</option>`);
+        }
+        this.meridiemSelect.innerHTML = `
+            <option value="am">${lang === 'ko' ? '오전' : 'AM'}</option>
+            <option value="pm">${lang === 'ko' ? '오후' : 'PM'}</option>
+        `;
+        this.hourSelect.innerHTML = '';
+        for (let hour = 1; hour <= 12; hour++) {
+            this.hourSelect.insertAdjacentHTML('beforeend', `<option value="${hour}">${hour}${lang === 'ko' ? '시' : ''}</option>`);
+        }
+        this.minuteSelect.innerHTML = '';
+        for (let minute = 0; minute < 60; minute += 10) {
+            const padded = String(minute).padStart(2, '0');
+            this.minuteSelect.insertAdjacentHTML('beforeend', `<option value="${minute}">${padded}${lang === 'ko' ? '분' : ''}</option>`);
+        }
+
+        this.yearSelect.value = previous.year || '1990';
+        this.monthSelect.value = previous.month || '1';
+        this.populateDays(previous.day || '1');
+        this.meridiemSelect.value = previous.meridiem || 'am';
+        this.hourSelect.value = previous.hour || '9';
+        this.minuteSelect.value = previous.minute || '0';
     }
+
+    populateDays(preferredDay) {
+        if (!this.daySelect) return;
+        const lang = document.documentElement.lang || 'ko';
+        const year = parseInt(this.yearSelect.value, 10) || new Date().getFullYear();
+        const month = parseInt(this.monthSelect.value, 10) || 1;
+        const previousDay = preferredDay || this.daySelect.value || '1';
+        const lastDay = new Date(year, month, 0).getDate();
+        this.daySelect.innerHTML = `<option value="">${lang === 'ko' ? '일' : 'Day'}</option>`;
+        for (let day = 1; day <= lastDay; day++) {
+            this.daySelect.insertAdjacentHTML('beforeend', `<option value="${day}">${day}${lang === 'ko' ? '일' : ''}</option>`);
+        }
+        this.daySelect.value = String(Math.min(parseInt(previousDay, 10) || 1, lastDay));
+    }
+
+    getBirthInfo() {
+        const year = parseInt(this.yearSelect.value, 10);
+        const month = parseInt(this.monthSelect.value, 10);
+        const day = parseInt(this.daySelect.value, 10);
+        if (!year || !month || !day) return null;
+        const meridiem = this.meridiemSelect.value;
+        const hour12 = parseInt(this.hourSelect.value, 10) || 12;
+        const minute = parseInt(this.minuteSelect.value, 10) || 0;
+        let hour = hour12 % 12;
+        if (meridiem === 'pm') hour += 12;
+        return { year, month, day, hour, minute };
+    }
+
     generateFortune() {
-        const year = document.getElementById('birth-year').value;
-        const month = document.getElementById('birth-month').value;
-        const day = document.getElementById('birth-day').value;
-        const results = this.calculate(year, month, day);
-        this.displayResults(results);
+        const birthInfo = this.getBirthInfo();
+        if (!birthInfo) return;
+        this.currentReport = this.calculate(birthInfo);
+        this.displayResults(this.currentReport);
     }
-    calculate(y, m, d) {
-        const seed = parseInt(y) + parseInt(m) + parseInt(d);
+
+    calculate(birthInfo) {
+        const { year, month, day, hour, minute } = birthInfo;
         const lang = document.documentElement.lang || 'ko';
-        const fortunes = lang === 'ko' ? [
-            {
-                overview: "하늘의 기운이 당신을 돕는 날입니다. 평소 계획하던 일이 있다면 오늘 실행에 옮기기에 최적의 시기입니다. 주변 사람들과의 협력이 큰 성과를 가져올 것이니 독단적인 결정보다는 의견을 경청하는 태도가 길운을 불러옵니다.",
-                romance: "상대방의 작은 변화를 알아차려 주는 세심함이 필요한 때입니다. 싱글이라면 가까운 지인과의 모임에서 뜻밖의 설렘을 느낄 수 있는 인연이 나타날 가능성이 높습니다. 솔직한 표현이 서로의 거리를 좁히는 열쇠가 됩니다.",
-                wealth: "금전운이 상승 곡선을 그리고 있습니다. 예상치 못한 곳에서 작은 수익이 발생하거나, 오랫동안 묵혀두었던 자산이 가치를 발할 수 있습니다. 다만, 과도한 투자는 금물이니 안정적인 자산 관리에 집중하는 것이 좋습니다."
-            }
-        ] : [
-            {
-                overview: "Heaven's energy is on your side today. If you have any plans, today is the perfect day to take action. Cooperation with others will bring great results, so listening to opinions rather than making arbitrary decisions will bring good luck.",
-                romance: "It's a time when you need to be attentive to the small changes in your partner. If you're single, there's a high chance of meeting someone unexpected at a gathering. Honest expression is the key to closing the distance between each other.",
-                wealth: "The wealth luck is on an upward curve. Small profits may arise from unexpected places, or long-held assets may prove valuable. However, excessive investment is a no-go, so focus on stable asset management."
-            }
+        const stems = [
+            { ko: '갑', en: 'Gap', element: 'wood' }, { ko: '을', en: 'Eul', element: 'wood' },
+            { ko: '병', en: 'Byeong', element: 'fire' }, { ko: '정', en: 'Jeong', element: 'fire' },
+            { ko: '무', en: 'Mu', element: 'earth' }, { ko: '기', en: 'Gi', element: 'earth' },
+            { ko: '경', en: 'Gyeong', element: 'metal' }, { ko: '신', en: 'Sin', element: 'metal' },
+            { ko: '임', en: 'Im', element: 'water' }, { ko: '계', en: 'Gye', element: 'water' }
         ];
-        const selected = fortunes[seed % fortunes.length];
+        const branches = [
+            { ko: '자', en: 'Ja', element: 'water' }, { ko: '축', en: 'Chuk', element: 'earth' },
+            { ko: '인', en: 'In', element: 'wood' }, { ko: '묘', en: 'Myo', element: 'wood' },
+            { ko: '진', en: 'Jin', element: 'earth' }, { ko: '사', en: 'Sa', element: 'fire' },
+            { ko: '오', en: 'O', element: 'fire' }, { ko: '미', en: 'Mi', element: 'earth' },
+            { ko: '신', en: 'Sin', element: 'metal' }, { ko: '유', en: 'Yu', element: 'metal' },
+            { ko: '술', en: 'Sul', element: 'earth' }, { ko: '해', en: 'Hae', element: 'water' }
+        ];
+        const elementNames = {
+            wood: lang === 'ko' ? '목(木)' : 'Wood',
+            fire: lang === 'ko' ? '화(火)' : 'Fire',
+            earth: lang === 'ko' ? '토(土)' : 'Earth',
+            metal: lang === 'ko' ? '금(金)' : 'Metal',
+            water: lang === 'ko' ? '수(水)' : 'Water'
+        };
+        const elementTone = {
+            wood: '성장, 기획, 배움, 확장',
+            fire: '표현, 열정, 매력, 추진',
+            earth: '안정, 책임, 현실감, 축적',
+            metal: '원칙, 판단, 정리, 결단',
+            water: '직관, 지혜, 유연함, 회복'
+        };
+        const mod = (num, base) => ((num % base) + base) % base;
+        const seed = year * 10000 + month * 100 + day + hour + minute;
+        const yearStem = stems[mod(year - 4, 10)];
+        const yearBranch = branches[mod(year - 4, 12)];
+        const monthStem = stems[mod(year * 12 + month + 3, 10)];
+        const monthBranch = branches[mod(month + 1, 12)];
+        const dayIndex = Math.floor(new Date(year, month - 1, day).getTime() / 86400000);
+        const dayStem = stems[mod(dayIndex + 4, 10)];
+        const dayBranch = branches[mod(dayIndex + 2, 12)];
+        const hourStem = stems[mod(dayIndex * 12 + Math.floor(hour / 2), 10)];
+        const hourBranch = branches[mod(Math.floor((hour + 1) / 2), 12)];
+        const pillars = [
+            { label: lang === 'ko' ? '년주' : 'Year', stem: yearStem, branch: yearBranch },
+            { label: lang === 'ko' ? '월주' : 'Month', stem: monthStem, branch: monthBranch },
+            { label: lang === 'ko' ? '일주' : 'Day', stem: dayStem, branch: dayBranch },
+            { label: lang === 'ko' ? '시주' : 'Hour', stem: hourStem, branch: hourBranch }
+        ];
+        const scores = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
+        pillars.forEach(pillar => {
+            scores[pillar.stem.element] += 1.2;
+            scores[pillar.branch.element] += 1;
+        });
+        const elements = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
+        const mainElement = elements[0];
+        const supportElement = elements[1];
+        const weakElement = elements[elements.length - 1];
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth() + 1;
+        const todayStem = stems[mod(Math.floor(now.getTime() / 86400000) + 4, 10)];
+        const yearFlow = stems[mod(currentYear - 4, 10)];
+        const formatPillar = pillar => `${pillar.stem.ko}${pillar.branch.ko}`;
+        const birthLabel = `${year}년 ${month}월 ${day}일 ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+
+        if (lang !== 'ko') {
+            return {
+                birthLabel,
+                scores,
+                categories: [
+                    { id: 'saju', title: 'Birth Chart', summary: 'A concise reading of your four pillars.', highlights: [`Main: ${elementNames[mainElement]}`, `Support: ${elementNames[supportElement]}`], paragraphs: ['This reading is optimized for Korean content. Switch to Korean for the full detailed interpretation.'] }
+                ]
+            };
+        }
+
+        const makeCategory = (id, title, summary, highlights, paragraphs, checklist) => ({ id, title, summary, highlights, paragraphs, checklist });
         return {
-            today: selected.overview, romance: selected.romance, wealth: selected.wealth,
-            saju: lang === 'ko' ? `분석 결과, 당신의 사주는 '금(金)'과 '토(土)'의 조화가 돋보입니다. 이는 성실함과 견고한 의지를 바탕으로 어떠한 역경도 이겨낼 수 있는 강인한 생명력을 상징합니다.` : `According to the analysis, your Saju highlights the harmony between 'Metal' and 'Earth'. This symbolizes a strong vitality that can overcome any adversity.`
+            birthLabel,
+            scores,
+            categories: [
+                makeCategory('saju', '사주 원국', `${formatPillar(pillars[0])}·${formatPillar(pillars[1])}·${formatPillar(pillars[2])}·${formatPillar(pillars[3])} 흐름으로 봅니다.`, [`중심 기운: ${elementNames[mainElement]}`, `보조 기운: ${elementNames[supportElement]}`, `보완 기운: ${elementNames[weakElement]}`], [
+                    `입력한 출생 정보는 ${birthLabel}입니다. 간이 만세력 기준으로 년주는 ${formatPillar(pillars[0])}, 월주는 ${formatPillar(pillars[1])}, 일주는 ${formatPillar(pillars[2])}, 시주는 ${formatPillar(pillars[3])}로 읽습니다. 년주는 성장 배경, 월주는 사회적 역할, 일주는 중심 기질, 시주는 내면과 후반 흐름을 보여줍니다.`,
+                    `이 사주는 ${elementNames[mainElement]} 기운이 가장 뚜렷하고 ${elementNames[supportElement]} 기운이 보조합니다. 강한 기운은 재능이 빨리 드러나는 통로이지만 과하면 고집이나 피로로 나타날 수 있습니다.`,
+                    `${elementNames[weakElement]} 기운은 의식적으로 보완할수록 전체 균형이 좋아지는 지점입니다. 부족함을 약점으로 보기보다 삶의 균형을 회복하는 방향으로 활용하는 것이 좋습니다.`
+                ], ['원국은 고정된 운명보다 타고난 반응 패턴을 보는 지도입니다.', '강한 기운은 잘 쓰고, 약한 기운은 습관으로 보완하세요.']),
+                makeCategory('yearly', `${currentYear}년 올해의 사주`, `${currentYear}년은 ${yearFlow.ko} 기운이 들어와 생활 구조와 목표를 다시 세우는 운입니다.`, [`올해 기운: ${elementNames[yearFlow.element]}`, seed % 2 === 0 ? '키워드: 정리와 축적' : '키워드: 확장과 선택', `보완: ${elementNames[weakElement]}`], [
+                    `올해는 한 번에 모든 것을 바꾸는 해라기보다, 이미 쌓아온 것 중 남길 것과 내려놓을 것을 구분하는 시기입니다. 일, 관계, 돈의 우선순위를 다시 세울수록 운의 체감이 좋아집니다.`,
+                    `특히 ${elementNames[mainElement]} 성향이 강하게 작동하므로 마음이 꽂힌 일에는 집중력이 좋습니다. 다만 모든 일을 동시에 끌고 가면 운이 분산되므로 목표는 세 개 이하로 줄이는 편이 좋습니다.`,
+                    `상반기에는 기반 정비와 관계 조율, 하반기에는 결과물 공개와 수익화 흐름이 좋습니다. 공부, 자격, 포트폴리오, 생활 습관 개선은 올해 안에 형태를 만드는 것이 유리합니다.`
+                ], ['좋은 선택: 장기 계획, 기록, 고정비 정리, 루틴 만들기', '주의 선택: 감정적 퇴사/이별/투자, 검증 없는 동업']),
+                makeCategory('monthly', `${currentMonth}월 한달 운세`, `이번 달은 실행보다 조율의 질이 중요한 달입니다.`, [`이번 달 흐름: ${currentMonth % 2 === 0 ? '관계 정리' : '기회 탐색'}`, `주의: ${elementNames[weakElement]} 부족`, '핵심: 일정과 지출 점검'], [
+                    `이번 달은 눈에 보이는 성과보다 다음 단계로 넘어가기 전 빈틈을 메우는 운이 강합니다. 일정표, 지출표, 연락해야 할 사람 목록을 정리하는 것만으로도 흐름이 안정됩니다.`,
+                    `일에서는 기존 업무의 문제점을 개선하거나 진행 중인 프로젝트를 더 설득력 있게 다듬는 데 유리합니다. 새로운 시작은 가능하지만 작은 테스트를 먼저 해보는 편이 좋습니다.`,
+                    `관계에서는 서운함이 누적된 사람과 대화가 필요할 수 있습니다. 감정의 옳고 그름보다 앞으로 어떤 방식으로 지낼지 합의하는 것이 훨씬 유리합니다.`
+                ], ['월말 전 점검: 고정비, 건강 루틴, 중요한 연락 3개', '조심할 점: 급한 구매, 말로만 정한 약속']),
+                makeCategory('daily', '오늘 하루 운세', `오늘은 ${todayStem.ko} 기운으로 작고 정확한 선택이 운을 살립니다.`, [`오늘 기운: ${elementNames[todayStem.element]}`, seed % 3 === 0 ? '좋은 시간: 오전' : seed % 3 === 1 ? '좋은 시간: 오후' : '좋은 시간: 저녁', '핵심: 속도보다 정확도'], [
+                    `오늘은 큰 결정보다 이미 정해진 일을 정확히 처리할수록 좋습니다. 연락, 결제, 예약, 제출처럼 작은 실수가 커질 수 있는 영역을 먼저 확인하세요.`,
+                    `주변 요청이 늘어날 수 있으니 바로 답하기보다 지금 처리할 일과 나중에 답할 일을 구분하는 것이 좋습니다. 오늘은 빠른 답보다 정확한 답이 더 좋은 운을 부릅니다.`,
+                    `짧은 정리가 행운 행동입니다. 지갑, 휴대폰 사진, 메모장, 책상 중 하나만 비워도 머릿속이 정돈되고 판단이 빨라집니다.`
+                ], ['하면 좋은 일: 밀린 답장, 일정 확인, 짧은 산책', '미루면 좋은 일: 충동구매, 감정적 통보']),
+                makeCategory('loveToday', '오늘의 연애운', seed % 2 === 0 ? '말보다 태도가 더 크게 전달되는 날입니다.' : '가벼운 대화에서 호감의 실마리가 생기는 날입니다.', ['연애 키워드: 부드러운 표현', '좋은 방식: 짧고 따뜻하게', '주의: 떠보기 금지'], [
+                    `오늘은 거창한 고백보다 상대가 신경 쓰던 작은 부분을 알아차리는 태도가 더 강하게 작용합니다. 연인이 있다면 피로를 덜어주는 말 한마디가 관계 온도를 올립니다.`,
+                    `싱글이라면 부담 없는 안부나 취향을 묻는 대화가 흐름을 바꿀 수 있습니다. 완벽한 타이밍을 기다리기보다 짧고 진심 있는 표현이 좋습니다.`,
+                    `주의할 점은 상대의 반응을 시험하는 말입니다. 원하는 것이 있으면 돌려 말하지 말고 부드럽게 직접 표현하는 편이 관계운을 살립니다.`
+                ], ['커플: 고마웠던 점 하나를 구체적으로 말하기', '싱글: 취향이나 근황을 묻는 짧은 연락']),
+                makeCategory('loveMonth', '이번 달 연애운', '관계의 속도보다 안정감과 반복되는 배려가 중요한 달입니다.', [currentMonth % 2 === 0 ? '관계 정돈' : '새 인연 탐색', '매력 포인트: 진정성', '주의: 과해석'], [
+                    `이번 달 연애운은 빠른 진전보다 신뢰 확인에 초점이 있습니다. 상대가 어떤 말을 하는지보다 약속을 어떻게 지키는지, 바쁠 때 어떤 태도를 보이는지를 보세요.`,
+                    `커플이라면 연락 빈도, 데이트 방식, 돈 쓰는 방식처럼 현실적인 부분을 편하게 이야기하면 관계가 안정됩니다. 싱글이라면 반복해서 만나는 자리에서 인연운이 열립니다.`,
+                    `감정 기복을 상대의 문제로만 돌리지 않는 것이 중요합니다. 잠과 식사 리듬을 먼저 챙길수록 관계 판단도 차분해집니다.`
+                ], ['좋은 만남: 차분하고 약속을 지키는 사람', '피할 흐름: 빠른 확신 요구, 비교, SNS 과몰입']),
+                makeCategory('moneyMonth', '이번 달 금전운', seed % 2 === 0 ? '새로 벌기보다 새는 돈을 막으면 좋아지는 달입니다.' : '작은 부수입과 제안이 들어올 수 있는 달입니다.', [seed % 2 === 0 ? '재물 흐름: 방어' : '재물 흐름: 기회', '핵심: 숫자 확인', '주의: 감정 소비'], [
+                    seed % 2 === 0 ? `이번 달은 공격적으로 돈을 불리기보다 지출 구조를 다듬는 것이 우선입니다. 구독, 보험, 통신비, 식비처럼 반복 지출을 점검하면 예상보다 큰 여유가 생깁니다.` : `이번 달은 작은 제안, 부업, 중고거래, 프로젝트성 수익처럼 예상 밖의 돈 흐름이 생길 수 있습니다. 다만 기회가 들어올수록 조건 확인이 중요합니다.`,
+                    `특히 "지금 아니면 안 된다"는 식의 제안은 하루 이상 시간을 두고 검토하세요. 좋은 기회는 검토 시간을 줘도 쉽게 사라지지 않습니다.`,
+                    `금전운을 올리는 실천은 수입보다 기록입니다. 하루 지출을 세 줄만 기록해도 소비 패턴이 보이고 다음 달 운을 받을 기반이 생깁니다.`
+                ], ['좋은 선택: 자동이체 정리, 계약서 확인, 목적별 통장 분리', '주의 선택: 즉흥 투자, 체면 지출']),
+                makeCategory('personality', '성향과 강점', `${elementTone[mainElement]}이 성격의 중심축입니다.`, [`강한 ${elementNames[mainElement]} 타입`, `일간: ${dayStem.ko}`, `보완: ${elementNames[weakElement]}`], [
+                    `${elementNames[mainElement]}이 강한 사람은 ${elementTone[mainElement]} 성향이 뚜렷합니다. 첫인상보다 시간이 지날수록 실력이 드러나는 편이며, 책임진 영역에서는 쉽게 손을 놓지 않습니다.`,
+                    `${elementNames[supportElement]}이 보조하기 때문에 생각만 하고 멈추기보다 실제 행동으로 옮기는 힘도 있습니다. 다만 결정이 빨라질수록 과정 설명을 놓치기 쉬우니 중요한 대화에서는 이유를 함께 말하는 것이 좋습니다.`,
+                    `약한 ${elementNames[weakElement]} 기운은 삶의 균형을 잡는 힌트입니다. 평소 회피하던 방식의 공부, 낯선 장소, 다른 사람과의 대화를 조금씩 경험해보세요.`
+                ], ['강점은 오래 신뢰를 쌓는 환경에서 빛납니다.', '보완점은 매일의 선택 패턴을 조정하며 채워집니다.']),
+                makeCategory('career', '일과 재능', '성과가 나는 방식과 피해야 할 업무 리듬을 봅니다.', ['강점: 구조화', '성과 방식: 반복 개선', '주의: 과책임'], [
+                    `이 사주는 혼자 몰입하는 시간과 사람 사이에서 조율하는 시간이 모두 필요합니다. 월주의 ${formatPillar(pillars[1])} 흐름은 사회적 역할에서 책임감이 커지는 구조를 보여줍니다.`,
+                    `기획, 운영, 분석, 교육, 상담, 콘텐츠, 관리 업무처럼 경험이 쌓일수록 깊이가 생기는 분야에서 안정적인 성취가 가능합니다.`,
+                    `주의할 점은 모든 문제를 혼자 떠안는 습관입니다. 역할 범위를 문서화하고 거절해야 할 일과 위임할 일을 구분하면 커리어 운이 부드럽게 풀립니다.`
+                ], ['올해 커리어 과제: 대표 성과 3개 정리', '피할 흐름: 책임만 늘고 권한은 없는 제안']),
+                makeCategory('health', '건강·컨디션운', '몸의 신호를 늦게 알아차리기 쉬워 루틴 관리가 중요합니다.', ['관리 포인트: 수면', '주의 포인트: 누적 피로', `보완 기운: ${elementNames[weakElement]}`], [
+                    `정신적으로 버티는 힘이 있는 편이라 피곤해도 계속 밀고 가는 경향이 있습니다. 피로가 쌓이면 판단이 예민해지고 관계나 돈 문제도 실제보다 크게 느껴질 수 있습니다.`,
+                    `거창한 운동보다 같은 시간에 자고 일어나기, 물 마시기, 짧은 산책, 스마트폰을 내려놓는 시간이 더 도움이 됩니다.`,
+                    `몸이 편해지면 올해의 기회도 더 안정적으로 받아낼 수 있습니다. 운을 좋게 쓰려면 회복 루틴을 먼저 챙기는 것이 좋습니다.`
+                ], ['이번 주 실천: 잠드는 시간 30분 앞당기기', '주의: 피곤할 때 큰돈 결정 금지']),
+                makeCategory('compatibility', '궁합·잘 맞는 사람', '나를 재촉하기보다 리듬을 존중하는 사람과 오래 갑니다.', [`잘 맞는 기운: ${elementNames[supportElement]}`, '관계 핵심: 신뢰', '주의: 말보다 행동'], [
+                    `잘 맞는 사람은 감정 표현만 화려한 사람보다 생활에서 신뢰를 보여주는 사람입니다. 약속을 지키고 바쁠 때도 최소한의 설명을 해주는 사람이 좋습니다.`,
+                    `${elementNames[supportElement]} 기운이 있는 사람은 당신의 장점을 자연스럽게 살려줍니다. 함께 있을 때 생각이 정리되고 무리하지 않아도 대화가 이어진다면 좋은 궁합으로 볼 수 있습니다.`,
+                    `반대로 급하게 확답을 요구하거나 불안을 자극하는 사람과는 피로가 커집니다. 초반의 강렬함보다 장기적인 편안함을 기준으로 보세요.`
+                ], ['좋은 신호: 말과 행동이 일치함', '궁합 질문: 이 사람과 있으면 내 생활이 좋아지는가']),
+                makeCategory('lucky', '행운 포인트와 주의일', '행운은 큰 사건보다 반복되는 작은 선택에서 강해집니다.', [`행운 색감: ${mainElement === 'wood' ? '초록' : mainElement === 'fire' ? '붉은색' : mainElement === 'earth' ? '노란색' : mainElement === 'metal' ? '흰색' : '남색'}`, `좋은 방향: ${['동쪽', '남쪽', '서쪽', '북쪽'][seed % 4]}`, `주의일: 매월 ${((day + 7) % 28) + 1}일 전후`], [
+                    `행운 포인트는 강한 기운을 더 강하게 만드는 것보다 부족한 기운을 부드럽게 보완하는 데 있습니다. 색상이나 방향은 마음가짐을 바꾸는 장치로 활용하세요.`,
+                    `매월 ${((day + 7) % 28) + 1}일 전후에는 피로와 감정 반응이 커질 수 있으니 큰 결정보다 점검에 쓰는 편이 좋습니다.`,
+                    `중요한 날에는 오전에 가장 어려운 일을 하나 처리하고 오후에는 사람과 조율하는 일을 배치하면 흐름이 좋습니다.`
+                ], ['행운 행동: 아침 정리 10분', '주의 행동: 피곤한 상태의 즉흥 약속'])
+            ]
         };
     }
+
     displayResults(data) {
         const lang = document.documentElement.lang || 'ko';
+        const firstCategory = data.categories[0];
         this.resultsContainer.innerHTML = `
-            <div class="fortune-card-grid">
-                <div class="result-card wide"><h3>🌟 ${lang === 'ko' ? '오늘의 총평' : 'Today\'s Overview'}</h3><p>${data.today}</p></div>
-                <div class="result-card"><h3>💖 ${lang === 'ko' ? '연애운 상세' : 'Romance Luck'}</h3><p>${data.romance}</p></div>
-                <div class="result-card"><h3>💰 ${lang === 'ko' ? '금전운 상세' : 'Wealth Luck'}</h3><p>${data.wealth}</p></div>
-                <div class="result-card wide"><h3>📜 ${lang === 'ko' ? '정밀 사주 분석' : 'Deep Saju Analysis'}</h3><p>${data.saju}</p></div>
+            <div class="result-card wide fortune-intro">
+                <h3>${lang === 'ko' ? '정밀 사주풀이 항목 조회' : 'Detailed Saju Reading'}</h3>
+                <p>${lang === 'ko' ? '출생 정보' : 'Birth info'}: ${data.birthLabel}</p>
+                <p class="fortune-guide">${lang === 'ko' ? '아래 항목을 누르면 사주 전문가가 풀어주듯 필요한 풀이를 하나씩 확인할 수 있습니다.' : 'Select a topic below to view each reading.'}</p>
+            </div>
+            <div class="fortune-query-tabs">
+                ${data.categories.map((category, index) => `
+                    <button type="button" class="fortune-query-btn ${index === 0 ? 'active' : ''}" data-section="${category.id}">
+                        <span>${category.title}</span>
+                        <small>${lang === 'ko' ? '조회' : 'View'}</small>
+                    </button>
+                `).join('')}
+            </div>
+            <div id="fortune-detail-panel" class="result-card wide fortune-detail-panel">
+                ${this.renderCategory(firstCategory)}
             </div>
         `;
+        this.resultsContainer.querySelectorAll('.fortune-query-btn').forEach(button => {
+            button.addEventListener('click', () => this.showSection(button.dataset.section));
+        });
         this.resultsContainer.classList.remove('hidden');
         this.resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    showSection(sectionId) {
+        if (!this.currentReport) return;
+        const category = this.currentReport.categories.find(item => item.id === sectionId);
+        if (!category) return;
+        this.resultsContainer.querySelectorAll('.fortune-query-btn').forEach(button => {
+            button.classList.toggle('active', button.dataset.section === sectionId);
+        });
+        const panel = document.getElementById('fortune-detail-panel');
+        panel.innerHTML = this.renderCategory(category);
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    renderCategory(category) {
+        return `
+            <h3>${category.title}</h3>
+            <p class="fortune-summary">${category.summary}</p>
+            <div class="fortune-expert-note">
+                <strong>사주 전문가 해설</strong>
+                <p>${this.createExpertComment(category)}</p>
+            </div>
+            ${category.highlights ? `<div class="fortune-highlights">${category.highlights.map(item => `<span>${item}</span>`).join('')}</div>` : ''}
+            ${category.paragraphs.map(paragraph => `<p>${paragraph}</p>`).join('')}
+            <div class="fortune-deep-reading">
+                ${this.createDeepReading(category).map(item => `<article><h4>${item.title}</h4><p>${item.text}</p></article>`).join('')}
+            </div>
+            ${category.checklist ? `<div class="fortune-checklist">${category.checklist.map(item => `<div>${item}</div>`).join('')}</div>` : ''}
+        `;
+    }
+
+    createExpertComment(category) {
+        const comments = {
+            saju: '원국은 타고난 성향의 지도입니다. 좋은 기운과 부족한 기운을 선악으로 나누기보다, 내가 편해지는 상황과 쉽게 지치는 상황을 읽어내는 것이 핵심입니다.',
+            yearly: '올해는 방향을 정하기 전에 삶의 구조를 먼저 정돈하라는 흐름입니다. 무리한 확장보다 반복 가능한 습관과 관계를 만들면 운이 안정적으로 열립니다.',
+            monthly: '한달 운세는 가까운 일정과 감정의 리듬을 보는 항목입니다. 이번 달에는 서두르기보다 일정, 돈, 관계를 차분히 정리할수록 체감 운이 좋아집니다.',
+            daily: '오늘의 운세는 하루의 우선순위를 잡아주는 안내입니다. 작은 확인, 짧은 정리, 정확한 답장이 오늘의 흐름을 부드럽게 만듭니다.',
+            compatibility: '궁합은 상대를 단정하는 기준이 아니라 관계의 호흡을 읽는 도구입니다. 잘 맞는 사람은 내 생활이 더 좋아지는 방향으로 자극을 줍니다.'
+        };
+        return comments[category.id] || `${category.title} 항목은 지금 내 삶에서 의식하면 좋은 흐름을 정리한 해설입니다. 고정된 미래가 아니라 오늘의 선택을 더 현명하게 만드는 참고점으로 활용하세요.`;
+    }
+
+    createDeepReading(category) {
+        const deep = {
+            saju: [
+                { title: '기질의 뿌리', text: '반복해서 선택하게 되는 방식과 불편함을 느끼는 상황까지 함께 볼 때 사주가 더 현실적으로 읽힙니다.' },
+                { title: '균형을 잡는 법', text: '부족한 기운은 약점이 아니라 균형을 회복하는 방향입니다. 작은 습관으로 보완할수록 전체 운이 부드러워집니다.' }
+            ],
+            compatibility: [
+                { title: '관계의 핵심', text: '궁합은 첫인상의 강렬함보다 반복되는 생활 장면에서 더 정확하게 드러납니다.' },
+                { title: '좋은 궁합의 조건', text: '갈등이 없는 관계보다 갈등 뒤에 회복할 수 있는 관계가 오래 갑니다.' }
+            ]
+        };
+        return deep[category.id] || [
+            { title: '상세 해석', text: '좋은 흐름은 키우고 부담이 되는 흐름은 줄이는 방향으로 읽으면 실제 생활에 더 잘 적용됩니다.' },
+            { title: '현실 적용', text: '오늘 바로 바꿀 수 있는 작은 행동 하나를 정하면 풀이가 생활의 변화로 이어집니다.' }
+        ];
     }
 
     generateCompatibility() {
@@ -244,7 +522,9 @@ class FortuneManager {
             work: '직장·동업',
             family: '가족·가까운 관계'
         }[relationEl.value] || '연애·결혼';
-        const scoreSeed = (typeEl.value.length * 17 + relationEl.value.length * 9) % 19;
+        const birthInfo = this.getBirthInfo();
+        const base = birthInfo ? birthInfo.year + birthInfo.month + birthInfo.day : 1990;
+        const scoreSeed = (base + typeEl.value.length * 17 + relationEl.value.length * 9) % 19;
         const score = 72 + scoreSeed;
 
         target.innerHTML = `

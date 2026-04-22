@@ -941,12 +941,73 @@ h1 {
     margin-bottom: 8px;
 }
 
-/* Info Section */
+/* Info Section & Academy */
 .info-section {
     margin-top: 60px;
     background: var(--container-bg);
     padding: 40px;
     border-radius: 20px;
+}
+
+.content-rich-article {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.article-box {
+    background: var(--bg-color);
+    padding: 25px;
+    border-radius: 16px;
+    border-left: 5px solid var(--primary-color);
+    transition: 0.3s;
+}
+
+.article-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px var(--shadow);
+}
+
+.article-box h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+.article-box p {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+    color: var(--secondary-color);
+}
+
+/* FAQ Section */
+.faq-section {
+    margin-top: 80px;
+    padding: 40px;
+    background: var(--container-bg);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px var(--shadow);
+}
+
+.faq-item {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--bg-color);
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+.faq-item h4 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.faq-item p {
+    color: var(--secondary-color);
+    line-height: 1.8;
 }
 
 .test-icon { font-size: 3rem; margin-bottom: 15px; }
