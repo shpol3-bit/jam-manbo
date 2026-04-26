@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://www.tstmind.com/sitemap.xml
