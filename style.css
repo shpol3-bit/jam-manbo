@@ -1,7 +1,20 @@
 /* General Styles */
-body { font-family: 'Noto Sans KR', sans-serif; background-color: #f4f7f6; color: #333; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; margin: 0; padding: 20px; }
-.container { background-color: #fff; padding: 30px 40px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); width: 100%; max-width: 950px; text-align: center; }
+body { font-family: 'Noto Sans KR', sans-serif; background-color: #f4f7f6; color: #333; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 0; }
+header { width: 100%; background-color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; }
+.navbar { max-width: 950px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+.logo { font-size: 1.2rem; font-weight: bold; color: #3498db; }
+.nav-links { list-style: none; display: flex; gap: 20px; margin: 0; padding: 0; }
+.nav-links a { text-decoration: none; color: #555; font-size: 0.95rem; font-weight: 500; }
+.nav-links a:hover { color: #3498db; }
+
+.container { background-color: #fff; padding: 30px 40px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); width: 100%; max-width: 950px; text-align: center; box-sizing: border-box; margin-bottom: 40px; }
 h1 { color: #2c3e50; margin-bottom: 25px; }
+
+footer { width: 100%; background-color: #fff; border-top: 1px solid #eee; padding: 30px 0; margin-top: auto; }
+.footer-content { max-width: 950px; margin: 0 auto; text-align: center; color: #777; font-size: 0.9rem; }
+.footer-links { list-style: none; display: flex; justify-content: center; gap: 20px; padding: 0; margin-top: 15px; }
+.footer-links a { text-decoration: none; color: #777; }
+.footer-links a:hover { color: #3498db; }
 
 /* Input & Buttons */
 .person-input-container { border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 20px; background-color: #fcfcfc; }
@@ -19,54 +32,15 @@ h1 { color: #2c3e50; margin-bottom: 25px; }
 
 /* Result Tabs */
 #result-container { margin-top: 30px; text-align: left; }
-.tab-nav { border-bottom: 2px solid #ddd; margin-bottom: 20px; display: flex; }
-.tab-link { padding: 10px 20px; cursor: pointer; border: none; background-color: transparent; font-size: 1.1em; color: #7f8c8d; border-bottom: 3px solid transparent; margin-bottom: -2px; }
-.tab-link.active { color: #3498db; border-bottom-color: #3498db; font-weight: 600; }
-.tab-content { display: none; padding: 20px; border: 1px solid #eee; border-top: none; border-radius: 0 0 8px 8px; animation: fadeIn 0.5s; }
-.tab-content.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.tab-content h3 { text-align: center; color: #34495e; margin-bottom: 20px; }
-.tab-content h4 { text-align: center; color: #333; margin: 30px 0 15px; border-top: 1px dashed #ccc; padding-top: 25px; }
-
-/* Basic Saju & Ohaeng Styles */
-.input-info { font-size: 0.9em; color: #666; margin-bottom: 20px; text-align: center; }
-.saju-table-container { overflow-x: auto; margin-bottom: 25px; }
-.saju-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 1.0em; }
-.saju-table th, .saju-table td { padding: 12px 10px; border: 1px solid #e0e0e0; }
-.ohaeng-summary { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 15px; background: #f9f9f9; border-radius: 8px; }
-.ohaeng-item { font-weight: bold; font-size: 1em; padding: 8px 12px; border-radius: 20px; color: white; }
-.ohaeng-목, .ohaeng-wood { background-color: #27ae60; } .ohaeng-화, .ohaeng-fire { background-color: #e74c3c; } .ohaeng-토, .ohaeng-earth { background-color: #f39c12; } .ohaeng-금, .ohaeng-metal { background-color: #95a5a6; } .ohaeng-수, .ohaeng-water { background-color: #34495e; }
-span.ohaeng-목, span.ohaeng-화, span.ohaeng-토, span.ohaeng-금, span.ohaeng-수 { color: white !important; padding: 2px 5px; border-radius: 3px; }
-
-/* Daewoon / Sewoon Tab Styles */
-.daewoon-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
-.daewoon-cycle { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
-.daewoon-pillar-info { padding: 15px; background-color: #f9f9f9; text-align: center; }
-.daewoon-pillar { font-size: 2.2em; font-weight: bold; margin-bottom: 10px; }
-.sewoon-table { width: 100%; border-collapse: collapse; }
-
-/* Sinsal Tab Styles */
-.sinsal-container { display: grid; grid-template-columns: 1fr; gap: 15px; }
-.sinsal-item { border-left: 4px solid #3498db; background-color: #f8f9fa; padding: 15px 20px; border-radius: 4px; }
-.sinsal-item h4 { text-align: left; margin: 0 0 8px; color: #2c3e50; }
-.sinsal-item p { margin: 0; line-height: 1.6; color: #555; }
-
-/* Gunghap Tab Styles */
-.gunghap-summary { text-align: center; padding: 10px 20px; background-color: #f2f5f7; border-radius: 8px; margin-bottom: 20px; line-height: 1.7; }
-.gunghap-ohaeng-container { display: flex; justify-content: space-around; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
-.gunghap-ohaeng-table { flex: 1; min-width: 250px; border-collapse: collapse; }
-.gunghap-ohaeng-table caption { font-size: 1.2em; font-weight: 500; margin-bottom: 10px; }
-.gunghap-ohaeng-table th, .gunghap-ohaeng-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-.gunghap-ohaeng-table th { background-color: #f1f1f1; }
-.jiji-relations-container { display: flex; flex-direction: column; gap: 12px; }
-.jiji-relation-item { display: flex; align-items: center; padding: 12px; border-radius: 6px; }
-.jiji-relation-item .rel-pillar { font-weight: 500; min-width: 50px; }
-.jiji-relation-item .rel-type { font-weight: bold; padding: 3px 8px; border-radius: 10px; color: white; margin: 0 10px; }
-.jiji-relation-item .rel-jiji { color: #555; margin-right: 15px; }
-.jiji-relation-item .rel-desc { font-size: 0.9em; color: #666; }
-.rel-합 { background-color: #eaf5ff; border-left: 4px solid #3498db; }
-.rel-합 .rel-type { background-color: #3498db; }
-.rel-충 { background-color: #fff0f0; border-left: 4px solid #e74c3c; }
-.rel-충 .rel-type { background-color: #e74c3c; }
-.rel-원진 { background-color: #fff9e6; border-left: 4px solid #f39c12; }
+...
 .rel-원진 .rel-type { background-color: #f39c12; }
+
+/* Info Section (Educational Content) */
+.info-section { margin-top: 50px; text-align: left; padding: 0 10px; }
+.info-section hr { border: 0; border-top: 1px solid #eee; margin-bottom: 40px; }
+.info-section h2 { color: #2c3e50; text-align: center; margin-bottom: 30px; font-size: 1.5rem; }
+.guide-item { margin-bottom: 30px; background-color: #fcfcfc; padding: 20px; border-radius: 8px; border: 1px solid #f0f0f0; }
+.guide-item h3 { color: #3498db; margin-top: 0; font-size: 1.15rem; margin-bottom: 15px; }
+.guide-item p { line-height: 1.8; color: #555; margin-bottom: 10px; font-size: 0.95rem; }
+.guide-item ul { padding-left: 20px; color: #555; font-size: 0.95rem; }
+.guide-item li { margin-bottom: 8px; }
